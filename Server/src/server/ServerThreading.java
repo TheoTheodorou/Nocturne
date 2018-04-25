@@ -303,13 +303,13 @@ public class ServerThreading implements Runnable {
                     }
                     //Get user details
                     //NEEDS FIXING
-                    case "GET_USER_DETAILS": {
-                        //retrieves the users data from the client 
+//                    case "GET_USER_DETAILS": {
+//                        //retrieves the users data from the client 
 //                        String Username = InFromClient.GetData();
 //                        Datapacket UserInformation = new Datapacket();
 //                        //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
-//                        ArrayList<String> UsersDetails = GetUsersDetails(Username);
-//                        ArrayList<String> UserSongs = GetUserSongFileName(Username);
+//                        //ArrayList<String> UsersDetails = db.GetUsersDetails(Username);
+//                        //ArrayList<String> UserSongs = db.GetUserSongFileName(Username);
 //                        //creates a multi dimensional array
 //                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
 //                        //stores the user details
@@ -329,7 +329,7 @@ public class ServerThreading implements Runnable {
 //                        //logs which user is recieving the information
 //                        GUI.AddToLog("Sending " + Username + " details and songs to " + ip);
 //                        break;
-                    }
+//                    }
                     //Get Friends Posts
                     case "GET_POSTS": {
                         //retrieves the users data
