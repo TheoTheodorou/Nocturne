@@ -681,7 +681,7 @@ public class Register extends javax.swing.JFrame {
 
                     NocturneServer.close();
 
-                    if ("Registered".equals(Reply.GetData())) {
+                    if ("Registered".equals(Reply.GetStringData())) {
                         ClearForm();
 
                         JOptionPane.showMessageDialog(this,

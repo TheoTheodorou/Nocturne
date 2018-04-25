@@ -292,7 +292,7 @@ public class Login extends javax.swing.JFrame {
             //Get reply 
             loginReply = (Datapacket) FromServerStream.readObject();
 
-            if ("CORRECT".equals(loginReply.GetData())) {
+            if ("CORRECT".equals(loginReply.GetStringData())) {
                 //Load Main Screen Form and Pass Current User Name that Logged in
                 Home home = new Home(username);
                 home.setLocationRelativeTo(null);

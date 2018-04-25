@@ -311,7 +311,7 @@ public class FindUser extends javax.swing.JFrame {
 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
 
-            String Condition = ServerReply.GetData();
+            String Condition = ServerReply.GetStringData();
 
             OutToServer.close();
             FromServerStream.close();
