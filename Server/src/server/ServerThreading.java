@@ -67,10 +67,10 @@ public class ServerThreading implements Runnable {
                         //Retreieves the username and password from the client
                          GUI.AddToLog("User : " + ip + " attempting login...");
                         
-                        String inputUserName = InFromClient.GetArray().get(0);
-                        String userPassWord = InFromClient.GetArray().get(1);
+                        String incomingUsername = InFromClient.GetArray().get(0);
+                        String incomingUserpassword = InFromClient.GetArray().get(1);
 
-                        File userFile = new File("users/" + inputUserName + "/" + inputUserName + ".txt");
+                        File userFile = new File("users/" + incomingUsername + "/" + incomingUsername + ".txt");
                         //Sets the current command to Login
                         ToClient.SetCommand("LOGIN");
                         //checks to see if the file exits...
@@ -80,16 +80,16 @@ public class ServerThreading implements Runnable {
                             //Loop through
                             while ((line = bufferedReader.readLine()) != null) {
                                 //if the password matches return to the client "CORRECT"
-                                if (line.equals(userPassWord)) {
+                                if (line.equals(incomingUserpassword)) {
                                     //adds an active user and passes through the username.
-                                    addActiveUser(inputUserName);
-                                    ToClient.SetSingleData("CORRECT");
+                                    addOnlineUser(incomingUsername);
+                                    ToClient.SetStringData("CORRECT");
                                     GUI.AddToLog("User : " + ip + " successfully logged in.");
                                     break;
                                 }
                             }
                         } else { //there was no match...
-                            ToClient.SetSingleData("INCORRECT");
+                            ToClient.SetStringData("INCORRECT");
                             GUI.AddToLog("Incorrect Log in attempt from: " + ip);
                         }
                         //send the datapacket to the client
@@ -100,14 +100,14 @@ public class ServerThreading implements Runnable {
                     case "LOGOUT": {
                         //Removes the active user
                         GUI.AddToLog("User : " + ip + " attempting log out.");
-                        removeActiveUser(InFromClient.GetData());
+                        removeOnlineUser(InFromClient.GetStringData());
                         //Set the command "LOGOUT"
                         ToClient.SetCommand("LOGOUT");
-                        ToClient.SetSingleData("Logout");
+                        ToClient.SetStringData("Logout");
                         //send the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //log the action
-                        GUI.AddToLog(InFromClient.GetData() + " has logged out");
+                        GUI.AddToLog(InFromClient.GetStringData() + " has logged out");
                         break;
                     }
                     //Create new user
@@ -118,11 +118,11 @@ public class ServerThreading implements Runnable {
                         String userName = UsersInfo.get(0).toString();
                         //creates a new file if one doesnt already exist
                         File registerFile = new File("users/" + userName + "/" + userName + ".txt");
-                        boolean AlreadyExists = (registerFile.exists() && !registerFile.isDirectory());
+                        boolean UserExists = (registerFile.exists() && !registerFile.isDirectory());
                         //Set the command "CREATE_USER"
                         ToClient.SetCommand("CREATE_USER");
                         //if the file exists...
-                        if (AlreadyExists == false) {
+                        if (UserExists == false) {
                             //create the user based of the datapacket 
                             user.createUser(UsersInfo);
                             //store the users profile picture
@@ -132,12 +132,12 @@ public class ServerThreading implements Runnable {
                             FileOutputStream FileOut = new FileOutputStream(PhotoDirectory);
                             FileOut.write(Image);
                             //tell the client they have registered
-                            ToClient.SetSingleData("Registered");
+                            ToClient.SetStringData("Registered");
                             GUI.AddToLog("The registration has been successful.");
 
                         } else {
                             GUI.AddToLog("This username already exists!");
-                            ToClient.SetSingleData("UsernameExists");
+                            ToClient.SetStringData("UsernameExists");
                         }
                         //Sends back the to client object
                         ToClientStream.writeObject(ToClient);
@@ -173,7 +173,7 @@ public class ServerThreading implements Runnable {
                         //Retreives the post information from the client
                         user.addPost(InFromClient.GetArray());
                         ToClient.SetCommand("UPLOAD_POST");
-                        ToClient.SetSingleData("Added Post");
+                        ToClient.SetStringData("Added Post");
                         //send the datapacket back to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client made a post
@@ -184,26 +184,26 @@ public class ServerThreading implements Runnable {
                     case "GET_FRIENDS": {
                         GUI.AddToLog("Get friends, request made...");
                         //retrieves the users friends and stores them in an array
-                        ArrayList<String> UsersFriends = user.GetUsersFriends(InFromClient.GetData());
+                        ArrayList<String> UsersFriends = user.GetUsersFriends(InFromClient.GetStringData());
                         ToClient.SetCommand("GET_FRIENDS");
                         ToClient.SetArray(UsersFriends);
                         ToClientStream.writeObject(ToClient);
                         //logs which client requested their friends list
-                        GUI.AddToLog(InFromClient.GetData() + " requested to view all friends");
+                        GUI.AddToLog(InFromClient.GetStringData() + " requested to view all friends");
                         break;
                     }
                     //Get Active Friends
                     case "GET_ACTIVE_FRIENDS": {
                         GUI.AddToLog("Get active friends, request made...");
                         //retrieves the users friends and stores them in an array
-                        ArrayList<String> Friends = user.GetUsersFriends(InFromClient.GetData());
+                        ArrayList<String> Friends = user.GetUsersFriends(InFromClient.GetStringData());
                         //creates a new array which stores onnly the active friends
-                        ArrayList<String> ActiveFriends = GetActiveFriends(Friends);
+                        ArrayList<String> ActiveFriends = GetOnlineFriends(Friends);
                         ToClient.SetCommand("GET_ACTIVE_FRIENDS");
                         ToClient.SetArray(ActiveFriends);
                         ToClientStream.writeObject(ToClient);
                         //logs which client requested to view thier active friends
-                        GUI.AddToLog("Getting " + InFromClient.GetData() + " active friends");
+                        GUI.AddToLog("Getting " + InFromClient.GetStringData() + " active friends");
                         break;
                     }
                     //New Friend Request
@@ -213,7 +213,7 @@ public class ServerThreading implements Runnable {
                         ArrayList<String> Users = InFromClient.GetArray();
                         //checks to see if a user exists
                         GUI.AddToLog(Users.get(1));
-                        boolean UsernameExists = user.DoesUsernameExist(Users.get(1));
+                        boolean UsernameExists = user.CheckUsername(Users.get(1));
                         ToClient.SetCommand("NEW_FRIEND_REQUEST");
                         if (UsernameExists == true) {
                             //if the user exists...
@@ -221,20 +221,20 @@ public class ServerThreading implements Runnable {
                             boolean AlreadyFriends = user.AlreadyFriends(Users);
                             if (AlreadyFriends == false) {
                                 //...and theyre not already friends
-                                ToClient.SetSingleData("Exists");
+                                ToClient.SetStringData("Exists");
                                 //creates a new friend request
                                 user.NewFriendRequest(Users);
                                 //logs which user sent a friend request and which user receieved it 
                                 GUI.AddToLog(Users.get(0) + " sent " + Users.get(1) + " a friends request");
                             } else {
                                 //..otherwise they are already friends
-                                ToClient.SetSingleData("AlreadyFriends");
+                                ToClient.SetStringData("AlreadyFriends");
                                 //logs which user sent a friend request and which user receieved it 
                                 GUI.AddToLog(Users.get(0) + " tried to send " + Users.get(1) + " a friend request, but they are already friends");
                             }
                         } else {
                             //tried to friend request a ghost
-                            ToClient.SetSingleData("Doesnt");
+                            ToClient.SetStringData("Doesnt");
                             //logs which user sent a friend request and which user receieved it 
                             GUI.AddToLog(Users.get(0) + " tried to send a friend request to a none existing user");
                         }
@@ -246,20 +246,20 @@ public class ServerThreading implements Runnable {
                     case "GET_FRIEND_REQUESTS": {
                         GUI.AddToLog("Get friend requests, request made...");
                         //Retrieves the users friend requests 
-                        ArrayList<String> UsersFriendRequests = user.GetUsersFriendRequests(InFromClient.GetData());
+                        ArrayList<String> UsersFriendRequests = user.GetUsersFriendRequests(InFromClient.GetStringData());
                         ToClient.SetCommand("GET_FRIEND_REQUESTS");
                         ToClient.SetArray(UsersFriendRequests);
                         //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client requested to see their pending friend requests
-                        GUI.AddToLog(InFromClient.GetData() + " reqested to see their friend requests");
+                        GUI.AddToLog(InFromClient.GetStringData() + " reqested to see their friend requests");
                         break;
                     }
                     //Get Users based on Prefernces
                     case "GET_USERS_ON_PREFERENCE": {
                         GUI.AddToLog("Get users preference filter, request made...");
                         //retrieves the users preferences
-                        ArrayList<String> Users = user.GetUsernamesOnPreferences(InFromClient.GetData());
+                        ArrayList<String> Users = user.GetUsernamesOnPreferences(InFromClient.GetStringData());
                         ToClient.SetCommand("GET_USERS_ON_PREFERENCE");
                         ToClient.SetArray(Users);
                         //sends the datapacket to the client
@@ -274,7 +274,7 @@ public class ServerThreading implements Runnable {
                         //accepts the friend request
                         user.AcceptFriendRequest(InFromClient.GetArray());
                         ToClient.SetCommand("ACCEPT_FRIEND_REQUEST");
-                        ToClient.SetSingleData("Accepted");
+                        ToClient.SetStringData("Accepted");
                         //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client accepted the friend request and from who
@@ -288,7 +288,7 @@ public class ServerThreading implements Runnable {
                         user.DeclineFriendRequest(InFromClient.GetArray());
                         //Datapacket Reply = new Datapacket();
                         ToClient.SetCommand("DECLINE_FRIEND_REQUEST");
-                        ToClient.SetSingleData("Declined");
+                        ToClient.SetStringData("Declined");
                         //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client declined the friend request and from who
@@ -299,13 +299,13 @@ public class ServerThreading implements Runnable {
                     case "GET_MY_SONGS": {
                         GUI.AddToLog("Request to retrieve a users songs made...");
                         //retreives all the users songs
-                        ArrayList<String> MySongs = user.GetUserSongs(InFromClient.GetData());
+                        ArrayList<String> MySongs = user.GetUserSongs(InFromClient.GetStringData());
                         ToClient.SetCommand("GET_MY_SONGS");
                         ToClient.SetArray(MySongs);
                         //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client requested to view their songs
-                        GUI.AddToLog(ip + " requests to see " + InFromClient.GetData() + " songs");
+                        GUI.AddToLog(ip + " requests to see " + InFromClient.GetStringData() + " songs");
                         break;
                     }
                     //Delete Friend
@@ -314,7 +314,7 @@ public class ServerThreading implements Runnable {
                         //deletes a friend
                         user.RemoveFriend(InFromClient.GetArray());
                         ToClient.SetCommand("DELETE_FRIEND");
-                        ToClient.SetSingleData("Removed");
+                        ToClient.SetStringData("Removed");
                         //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         //logs which client deleted a friend and who it was
@@ -326,7 +326,7 @@ public class ServerThreading implements Runnable {
                     case "GET_USER_DETAILS": {
                         GUI.AddToLog("Request to view user details made...");
                         //retrieves the users data from the client 
-                        String Username = InFromClient.GetData();
+                        String Username = InFromClient.GetStringData();
                         Datapacket UserInformation = new Datapacket();
                         //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
                         ArrayList<String> UsersDetails = user.GetUsersDetails(Username);
@@ -355,10 +355,10 @@ public class ServerThreading implements Runnable {
                     case "GET_POSTS": {
                         GUI.AddToLog("Request to view posts made...");
                         //retrieves the users data
-                        String Username = InFromClient.GetData();
+                        String Username = InFromClient.GetStringData();
                         ArrayList<String> Friends = user.GetUsersFriends(Username);
                         //Add own username to retrieve own posts
-                        Friends.add(InFromClient.GetData());
+                        Friends.add(InFromClient.GetStringData());
                         ArrayList<String> UserPosts = user.GetFriendsPosts(Friends);
                         Datapacket FriendsPosts = new Datapacket();
                         FriendsPosts.SetCommand("GET_POSTS");
@@ -375,8 +375,8 @@ public class ServerThreading implements Runnable {
                         //creates a new datapacket
                         Datapacket SongData = new Datapacket();
                         //retrieves all the song data
-                        File MusicDirectory = new File("media/music/" + InFromClient.GetData() + ".mp3");
-                        File PhotoDirectory = new File("media/albums/" + InFromClient.GetData() + ".png");
+                        File MusicDirectory = new File("media/music/" + InFromClient.GetStringData() + ".mp3");
+                        File PhotoDirectory = new File("media/albums/" + InFromClient.GetStringData() + ".png");
                         FileInputStream SongFile = new FileInputStream(MusicDirectory);
                         byte[] buffer = new byte[SongFile.available()];
                         SongFile.read(buffer);
@@ -389,7 +389,7 @@ public class ServerThreading implements Runnable {
                         //send the datapacket to the client
                         ToClientStream.writeObject(SongData);
                         //logs which user is downloading the song data.
-                        GUI.AddToLog(ip + " is downloading the song and cover photo for " + InFromClient.GetData());
+                        GUI.AddToLog(ip + " is downloading the song and cover photo for " + InFromClient.GetStringData());
                         break;
                     }
                     default:
@@ -407,7 +407,7 @@ public class ServerThreading implements Runnable {
         }
     }
     //adds an active user
-    public void addActiveUser(String username) {
+    public void addOnlineUser(String username) {
         try {
             onlineUsers.add(username);
             GUI.AddToLog("User: " + username + " is now active.");
@@ -419,7 +419,7 @@ public class ServerThreading implements Runnable {
         }
     }
     //removes an active user, for example when logging our
-    public String removeActiveUser(String username) {
+    public String removeOnlineUser(String username) {
         int userIndex = onlineUsers.indexOf(username);
         try {
             onlineUsers.remove(userIndex);
@@ -432,16 +432,16 @@ public class ServerThreading implements Runnable {
         return "success";
     }
     //retrieves an array of all the user who are active
-    public ArrayList<String> GetActiveFriends(ArrayList<String> Friends) {
-        ArrayList<String> ActiveFriends = new ArrayList();
+    public ArrayList<String> GetOnlineFriends(ArrayList<String> Friends) {
+        ArrayList<String> OnlineFriends = new ArrayList();
         String CurrentFriend = "";
         for (int i = 0; i < Friends.size(); i++) {
             CurrentFriend = Friends.get(i);
             if (onlineUsers.contains(CurrentFriend)) {
                 GUI.AddToLog("Found Active Friend");
-                ActiveFriends.add(CurrentFriend);
+                OnlineFriends.add(CurrentFriend);
             }
         }
-        return ActiveFriends;
+        return OnlineFriends;
     }
 }

@@ -26,9 +26,7 @@ public class Server {
             ServerSocket server = new ServerSocket(9090);
                     //Constantly "listening" (waiting) for a client.
                         while (true) 
-                    {  
-                        
-                         
+                    { 
                         //When a client connects create a new thread to handle the connection and commands.
                         //Then start the thread. And continue to wait for more clients;
                         
