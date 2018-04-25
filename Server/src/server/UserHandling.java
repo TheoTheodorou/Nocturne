@@ -228,7 +228,7 @@ public class UserHandling {
         File newUserFile = new File("users/" + username + "/songs.txt");
         newUserFile.createNewFile();
 
-        BufferedReader reader = new BufferedReader(new FileReader("users/" + username + "/songs.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("users/" + username + username + "/songs.txt"));
         String line;
         List<String> songList = new ArrayList<String>();
 

@@ -338,7 +338,7 @@ public class ServerThreading implements Runnable {
                         UserInformation.SetCommand("GET_USER_DETAILS");
                         UserInformation.SetMultipleArray(UsersInfo);
                         //retrieves the users photo from file
-                        File PhotoDirectory = new File("media/profiles" + Username + ".png");
+                        File PhotoDirectory = new File("media/profiles/" + Username + ".png");
                         FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
                         byte[] buffer = new byte[UserPicture.available()];
                         UserPicture.read(buffer);
