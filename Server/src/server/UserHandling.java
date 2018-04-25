@@ -147,8 +147,9 @@ public class UserHandling {
 
     //Checks to see if two users are already friends (validation check)
     public boolean AlreadyFriends(ArrayList<String> users) throws IOException {
-        GUI.AddToLog("User Handling : AlreadyFriends called. AlreadyFriends returns : " + AlreadyFriends );
+        
         boolean AlreadyFriends = false;
+        GUI.AddToLog("User Handling : AlreadyFriends called. AlreadyFriends returns : " + AlreadyFriends );
         //User[0] to retrieve friends for
         //if User[1] is in the ArrayList then they are already friends
         ArrayList<String> AllFriends = GetUsersFriends(users.get(0));
