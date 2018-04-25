@@ -25,6 +25,7 @@ import java.util.List;
 public class UserHandling {
 
     ServerGUI GUI;
+
     //Adds all the user information to file
     public void createUser(ArrayList userInfo) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
@@ -77,6 +78,7 @@ public class UserHandling {
         }
         writer.close();
     }
+
     //Adds every detail regarding users songs to file
     public void addSong(ArrayList<String> songInformation) throws IOException {
         // Assign the song details from the given array
@@ -93,6 +95,7 @@ public class UserHandling {
         writer.close();
 
     }
+
     //Adds every post made to file
     public void addPost(ArrayList<String> postInformation) throws IOException {
         // Assign the post details from the given array
@@ -110,7 +113,7 @@ public class UserHandling {
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(newUserPost, true)));
             writer.println(username + "," + postType + "," + message);
             writer.close();
-        //but if its just a standard post...
+            //but if its just a standard post...
         } else if ("TextPost".equals(postType)) {
 
             message = postInformation.get(2);
@@ -121,6 +124,7 @@ public class UserHandling {
             writer.close();
         }
     }
+
     //Checks the text files to see if a username has been taken (validation check)
     public boolean DoesUsernameExist(String username) {
         //Simple search
@@ -133,6 +137,7 @@ public class UserHandling {
         }
         return Exists;
     }
+
     //Checks to see if two users are already friends (validation check)
     public boolean AlreadyFriends(ArrayList<String> users) throws IOException {
         boolean AlreadyFriends = false;
@@ -156,6 +161,7 @@ public class UserHandling {
 
         return AlreadyFriends;
     }
+
     //Reads in from file all of the users friends
     public ArrayList<String> GetUsersFriends(String username) throws FileNotFoundException, IOException {
         //If there isnt a file, create one
@@ -175,6 +181,7 @@ public class UserHandling {
         ArrayList<String> returnList = new ArrayList(friendList);
         return returnList;
     }
+
     //Reads in from file all of the users friend requests
     public ArrayList<String> GetUsersFriendRequests(String username) throws FileNotFoundException, IOException {
         //If there isnt a file, create one
@@ -193,9 +200,10 @@ public class UserHandling {
         ArrayList<String> FriendsList = new ArrayList(friendList);
         return FriendsList;
     }
+
     //Creates a new friend request between to users and stores the information to file
     public void NewFriendRequest(ArrayList<String> Users) throws FileNotFoundException, IOException {
-        
+
         String firstUser = Users.get(0);
         String secondUser = Users.get(1);
 
@@ -213,6 +221,7 @@ public class UserHandling {
         secondWriter.println(firstUser);
         secondWriter.close();
     }
+
     //Retrieves the users song information from file and returns a list
     public ArrayList<String> GetUserSongs(String username) throws FileNotFoundException, IOException {
 
@@ -231,6 +240,7 @@ public class UserHandling {
         ArrayList<String> returnList = new ArrayList(songList);
         return returnList;
     }
+
     //If a user accepts a friend request then the friendship between two user is updated (stored in text file)
     public void AcceptFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
 
@@ -251,6 +261,7 @@ public class UserHandling {
         secondWriter.println(firstUser);
         secondWriter.close();
     }
+
     //If a user declines a friend request then the friend request is removed from file for both users. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void DeclineFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
         //WILL NOT WORK PROPERLY NEEDS FIXING
@@ -301,6 +312,7 @@ public class UserHandling {
         }
         secondWriter.close();
     }
+
     //If a user removes a friend then the friend file is read, changed and updated accordingly. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void RemoveFriend(ArrayList<String> users) throws FileNotFoundException, IOException {
         //Get all the information from file, create a temporary array to store the information
@@ -349,6 +361,7 @@ public class UserHandling {
         }
         secondWriter.close();
     }
+
     //Retreives all the users who have the same music preferences
     public ArrayList<String> GetUsernamesOnPreferences(String musicPref) throws IOException {
 
@@ -360,15 +373,15 @@ public class UserHandling {
         String line;
 
         List<String> preferenceList = new ArrayList<String>();
-        while ((line = reader.readLine()) != null) 
-        {
-            username = line.substring(0,line.length()-1);
+        while ((line = reader.readLine()) != null) {
+            username = line.substring(0, line.length() - 1);
             preferenceList.add(username);
         }
 
         ArrayList<String> returnList = new ArrayList(preferenceList);
         return returnList;
     }
+
     //Retreives all a users friends posts.
     public ArrayList<String> GetFriendsPosts(ArrayList<String> friends) throws IOException {
 
@@ -392,6 +405,25 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(postsList);
+        return returnList;
+    }
+
+    public ArrayList<String> GetUsersDetails(String username) throws FileNotFoundException, IOException {
+        //If there isnt a file, create one
+        File friendFile = new File("users/" + username + username + ".txt");
+        //createnewfile() function is a boolean so if its set to true then it will just carry on.
+        friendFile.createNewFile();
+
+        BufferedReader reader = new BufferedReader(new FileReader(friendFile));
+        String line;
+        List<String> detailsList = new ArrayList<String>();
+
+        while ((line = reader.readLine()) != null) {
+            detailsList.add(line);
+        }
+        reader.close();
+
+        ArrayList<String> returnList = new ArrayList(detailsList);
         return returnList;
     }
 

@@ -31,7 +31,6 @@ public class ServerThreading implements Runnable {
     public ServerGUI GUI;
     public Datapacket InFromClient = new Datapacket();
     public Datapacket ToClient = new Datapacket();
-    public String userName;
     UserHandling user = new UserHandling();
     public static List<String> onlineUsers = new ArrayList<String>();
     //Sets the socket based of the connecting client
@@ -81,9 +80,8 @@ public class ServerThreading implements Runnable {
                             while ((line = bufferedReader.readLine()) != null) {
                                 //if the password matches return to the client "CORRECT"
                                 if (line.equals(userPassWord)) {
-                                    userName = inputUserName;
                                     //adds an active user and passes through the username.
-                                    addActiveUser(userName);
+                                    addActiveUser(inputUserName);
                                     ToClient.SetSingleData("CORRECT");
                                     break;
                                 }
@@ -99,7 +97,7 @@ public class ServerThreading implements Runnable {
                     //Log Out
                     case "LOGOUT": {
                         //Removes the active user
-                        removeActiveUser(userName);
+                        removeActiveUser(InFromClient.GetData());
                         //Set the command "LOGOUT"
                         ToClient.SetCommand("LOGOUT");
                         ToClient.SetSingleData("Logout");
@@ -113,6 +111,7 @@ public class ServerThreading implements Runnable {
                     case "CREATE_USER": {
                         //Retreieve the data from the datapacket
                         ArrayList UsersInfo = InFromClient.GetArray();
+                        String userName = UsersInfo.get(0).toString();
                         //creates a new file if one doesnt already exist
                         File registerFile = new File("users/" + userName + "/" + userName + ".txt");
                         boolean AlreadyExists = (registerFile.exists() && !registerFile.isDirectory());
@@ -144,6 +143,8 @@ public class ServerThreading implements Runnable {
                         //Retreives the song information stored inside the datapacket
                         ArrayList SongInformation = InFromClient.GetArray();
                         //Writes the information to file
+                        new File("media/music").mkdirs();
+                        new File("media/albums").mkdirs();
                         String FileName = SongInformation.get(2) + "," + SongInformation.get(3);
                         File MusicDirectory = new File("media/music/" + FileName + ".mp3");
                         File PhotoDirectory = new File("media/albums/" + FileName + ".png");
@@ -303,33 +304,33 @@ public class ServerThreading implements Runnable {
                     }
                     //Get user details
                     //NEEDS FIXING
-//                    case "GET_USER_DETAILS": {
-//                        //retrieves the users data from the client 
-//                        String Username = InFromClient.GetData();
-//                        Datapacket UserInformation = new Datapacket();
-//                        //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
-//                        //ArrayList<String> UsersDetails = db.GetUsersDetails(Username);
-//                        //ArrayList<String> UserSongs = db.GetUserSongFileName(Username);
-//                        //creates a multi dimensional array
-//                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
-//                        //stores the user details
-//                        UsersInfo.add(UsersDetails);
-//                        //stores the users songs
-//                        UsersInfo.add(UserSongs);
-//                        UserInformation.SetCommand("GET_USER_DETAILS");
-//                        UserInformation.SetMultipleArray(UsersInfo);
-//                        //retrieves the users photo from file
-//                        File PhotoDirectory = new File("res/Photos/" + Username + ".png");
-//                        FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
-//                        byte[] buffer = new byte[UserPicture.available()];
-//                        UserPicture.read(buffer);
-//                        UserInformation.SetFirstByte(buffer);
-//                        //sends the datapacket to the client
-//                        ToClientStream.writeObject(UserInformation);
-//                        //logs which user is recieving the information
-//                        GUI.AddToLog("Sending " + Username + " details and songs to " + ip);
-//                        break;
-//                    }
+                    case "GET_USER_DETAILS": {
+                        //retrieves the users data from the client 
+                        String Username = InFromClient.GetData();
+                        Datapacket UserInformation = new Datapacket();
+                        //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
+                        ArrayList<String> UsersDetails = user.GetUsersDetails(Username);
+                        ArrayList<String> UserSongs = user.GetUserSongs(Username);
+                        //creates a multi dimensional array
+                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
+                        //stores the user details
+                        UsersInfo.add(UsersDetails);
+                        //stores the users songs
+                        UsersInfo.add(UserSongs);
+                        UserInformation.SetCommand("GET_USER_DETAILS");
+                        UserInformation.SetMultipleArray(UsersInfo);
+                        //retrieves the users photo from file
+                        File PhotoDirectory = new File("media/profiles" + Username + ".png");
+                        FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
+                        byte[] buffer = new byte[UserPicture.available()];
+                        UserPicture.read(buffer);
+                        UserInformation.SetFirstByte(buffer);
+                        //sends the datapacket to the client
+                        ToClientStream.writeObject(UserInformation);
+                        //logs which user is recieving the information
+                        GUI.AddToLog("Sending " + Username + " details and songs to " + ip);
+                        break;
+                    }
                     //Get Friends Posts
                     case "GET_POSTS": {
                         //retrieves the users data
@@ -338,7 +339,6 @@ public class ServerThreading implements Runnable {
                         //Add own username to retrieve own posts
                         Friends.add(InFromClient.GetData());
                         ArrayList<String> UserPosts = user.GetFriendsPosts(Friends);
-                        GUI.AddToLog(Friends.get(0));
                         Datapacket FriendsPosts = new Datapacket();
                         FriendsPosts.SetCommand("GET_POSTS");
                         FriendsPosts.SetArray(UserPosts);
