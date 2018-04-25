@@ -34,7 +34,7 @@ public class ServerThreading implements Runnable {
     public String userName;
     UserHandling user = new UserHandling();
     public static List<String> onlineUsers = new ArrayList<String>();
-
+    //Sets the socket based of the connecting client
     public ServerThreading SetSocket(Socket client) {
         this.clientSocket = client;
         ServerThreading returnThread = new ServerThreading();
@@ -48,101 +48,105 @@ public class ServerThreading implements Runnable {
 
     public void run() {
         try {
-            //Stating which client connected to
-            //System.out.println("Connected to " + client.getInetAddress());
-            //Create an Input stream to send to user        
+       
+            //Create an I/O stream to send to user        
             ObjectInputStream FromClientStream = new ObjectInputStream(clientSocket.getInputStream());
-
             ObjectOutputStream ToClientStream = new ObjectOutputStream(clientSocket.getOutputStream());
-
-            //Loop
-            //Database db = new Database();
-            //Accessing the DataBase
+            //Retreieve the datapacket sent by the client and read the information
             InFromClient = (Datapacket) FromClientStream.readObject();
+            //Stores the ip of the clientsocket (clientsocket defined earlier in class)
             String ip = clientSocket.getInetAddress().toString().replace("/", "");
-            //System.out.println(InFromClient.GetService());
+            //If there has been no command sent by the client, output the ip of the client and declare the error
             if (null == InFromClient.GetCommand()) {
                 GUI.AddToLog(ip + " has sent an invalid command");
             } else //Login attempted
             {
+                //Switch cases begin, switches occording to the command recieved.
                 switch (InFromClient.GetCommand()) {
                     //User Log in 
                     case "LOGIN":
+                        //Retreieves the username and password from the client
                         String inputUserName = InFromClient.GetArray().get(0);
-                        String UserPassWord = InFromClient.GetArray().get(1);
+                        String userPassWord = InFromClient.GetArray().get(1);
 
                         File userFile = new File("users/" + inputUserName + "/" + inputUserName + ".txt");
+                        //Sets the current command to Login
                         ToClient.SetCommand("LOGIN");
+                        //checks to see if the file exits...
                         if (userFile.exists() && !userFile.isDirectory()) {
-
                             BufferedReader bufferedReader = new BufferedReader(new FileReader(userFile));
                             String line;
+                            //Loop through
                             while ((line = bufferedReader.readLine()) != null) {
-                                if (line.equals(UserPassWord)) {
+                                //if the password matches return to the client "CORRECT"
+                                if (line.equals(userPassWord)) {
                                     userName = inputUserName;
+                                    //adds an active user and passes through the username.
                                     addActiveUser(userName);
-//                                    GUI.AddToLog("debug: " + onlineUsers.get(0));
-
                                     ToClient.SetSingleData("CORRECT");
-
                                     break;
                                 }
                             }
-
-                            //ToClient.SetSingleData("CORRECT");
-                        } else {
+                        } else { //there was no match...
                             ToClient.SetSingleData("INCORRECT");
                             GUI.AddToLog("Incorrect Log in attempt from: " + ip);
-                        }   //Send InfoPacket To user
+                        }
+                        //send the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         break;
 
                     //Log Out
                     case "LOGOUT": {
+                        //Removes the active user
                         removeActiveUser(userName);
-                        
+                        //Set the command "LOGOUT"
                         ToClient.SetCommand("LOGOUT");
                         ToClient.SetSingleData("Logout");
+                        //send the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //log the action
                         GUI.AddToLog(InFromClient.GetData() + " has logged out");
                         break;
                     }
                     //Create new user
                     case "CREATE_USER": {
-
+                        //Retreieve the data from the datapacket
                         ArrayList UsersInfo = InFromClient.GetArray();
-
+                        //creates a new file if one doesnt already exist
                         File registerFile = new File("users/" + userName + "/" + userName + ".txt");
                         boolean AlreadyExists = (registerFile.exists() && !registerFile.isDirectory());
-
+                        //Set the command "CREATE_USER"
                         ToClient.SetCommand("CREATE_USER");
+                        //if the file exists...
                         if (AlreadyExists == false) {
+                            //create the user based of the datapacket 
                             user.createUser(UsersInfo);
-
+                            //store the users profile picture
                             byte[] Image = (byte[]) InFromClient.GetByteData();
-                            
                             new File ("media/profiles").mkdirs();
                             File PhotoDirectory = new File("media/profiles/" + userName + ".png");
                             FileOutputStream FileOut = new FileOutputStream(PhotoDirectory);
                             FileOut.write(Image);
-
+                            //tell the client they have registered
                             ToClient.SetSingleData("Registered");
 
                         } else {
                             ToClient.SetSingleData("UsernameExists");
                         }
+                        //Sends back the to client object
                         ToClientStream.writeObject(ToClient);
                         GUI.AddToLog("Added new user: " + UsersInfo.get(0));
                         break;
                     }
                     //Upload new song
                     case "UPLOAD_SONG": {
-
+                        //Retreives the song information stored inside the datapacket
                         ArrayList SongInformation = InFromClient.GetArray();
-
+                        //Writes the information to file
                         String FileName = SongInformation.get(2) + "," + SongInformation.get(3);
                         File MusicDirectory = new File("media/music/" + FileName + ".mp3");
                         File PhotoDirectory = new File("media/albums/" + FileName + ".png");
+                        //upload the song 
                         byte[] Song = (byte[]) InFromClient.GetByteData();
                         FileOutputStream SongOut = new FileOutputStream(MusicDirectory);
                         SongOut.write(Song);
@@ -152,60 +156,74 @@ public class ServerThreading implements Runnable {
                         user.addSong(SongInformation);
                         user.addPost(SongInformation);
                         GUI.AddToLog(SongInformation.get(0) + " Uploaded a new song: " + FileName);
-
-                        //System.out.println("Successfull");
                         break;
                     }
-//                    }
                     //Upload new post
                     case "UPLOAD_POST": {
+                        //Retreives the post information from the client
                         user.addPost(InFromClient.GetArray());
                         ToClient.SetCommand("UPLOAD_POST");
                         ToClient.SetSingleData("Added Post");
+                        //send the datapacket back to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client made a post
                         GUI.AddToLog(InFromClient.GetArray().get(0) + " made a new post");
                         break;
                     }
                     //Get My Friends
                     case "GET_FRIENDS": {
+                        //retrieves the users friends and stores them in an array
                         ArrayList<String> UsersFriends = user.GetUsersFriends(InFromClient.GetData());
                         ToClient.SetCommand("GET_FRIENDS");
                         ToClient.SetArray(UsersFriends);
                         ToClientStream.writeObject(ToClient);
+                        //logs which client requested their friends list
                         GUI.AddToLog(InFromClient.GetData() + " requested to view all friends");
                         break;
                     }
-
                     //Get Active Friends
                     case "GET_ACTIVE_FRIENDS": {
-                        
+                        //retrieves the users friends and stores them in an array
                         ArrayList<String> Friends = user.GetUsersFriends(InFromClient.GetData());
+                        //creates a new array which stores onnly the active friends
                         ArrayList<String> ActiveFriends = GetActiveFriends(Friends);
                         ToClient.SetCommand("GET_ACTIVE_FRIENDS");
                         ToClient.SetArray(ActiveFriends);
                         ToClientStream.writeObject(ToClient);
+                        //logs which client requested to view thier active friends
                         GUI.AddToLog("Getting " + InFromClient.GetData() + " active friends");
                         break;
                     }
                     //New Friend Request
                     case "NEW_FRIEND_REQUEST": {
+                        //retrieves the users from the client
                         ArrayList<String> Users = InFromClient.GetArray();
+                        //checks to see if a user exists
                         boolean UsernameExists = user.DoesUsernameExist(Users.get(1));
                         ToClient.SetCommand("NEW_FRIEND_REQUEST");
                         if (UsernameExists == true) {
+                            //if the user exists...
                             boolean AlreadyFriends = user.AlreadyFriends(Users);
                             if (AlreadyFriends == false) {
+                                //...and theyre not already friends
                                 ToClient.SetSingleData("Exists");
+                                //creates a new friend request
                                 user.NewFriendRequest(Users);
+                                //logs which user sent a friend request and which user receieved it 
                                 GUI.AddToLog(Users.get(0) + " sent " + Users.get(1) + " a friends request");
                             } else {
+                                //..otherwise they are already friends
                                 ToClient.SetSingleData("AlreadyFriends");
+                                //logs which user sent a friend request and which user receieved it 
                                 GUI.AddToLog(Users.get(0) + " tried to send " + Users.get(1) + " a friend request, but they are already friends");
                             }
                         } else {
+                            //tried to friend request a ghost
                             ToClient.SetSingleData("Doesnt");
+                            //logs which user sent a friend request and which user receieved it 
                             GUI.AddToLog(Users.get(0) + " tried to send a friend request to a none existing user");
                         }
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         break;
                     }
