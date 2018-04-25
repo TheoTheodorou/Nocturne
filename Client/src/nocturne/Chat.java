@@ -34,6 +34,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import datapacket.Datapacket;
+import java.io.FileInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Chat extends javax.swing.JFrame {
 
@@ -49,125 +53,35 @@ public class Chat extends javax.swing.JFrame {
     DataInputStream inFromMsgServer;
 
     String chatName;
+    File chatFile;
     boolean cont = true;
 
-    public Chat(String username, String friendname) {
+    public Chat(String input_username, String input_friendname) {
         initComponents();
 
-        closeWindow();
+
 
         // Gets usernames
-        username = _username;
-        recieveUsername = _recieveUsername;
-
-        // Sets background
-        getContentPane().setBackground(background);
+        userName = input_username;
+        friendName = input_friendname;
 
         //Outputs name of user they're messaging 
-        lblUsername.setText(recieveUsername);
-
-        // Creates white lines
-        lblTopLine.setBorder(new LineBorder(foreground, 4));
-        lblBottomLine.setBorder(new LineBorder(foreground, 4));
-
-        // Styles Scroll panes
-        spMessages.getViewport().setBackground(background);
-        spMessages.setForeground(foreground);
-        spMessages.setBorder(null);
-        spMessages.getVerticalScrollBar().setUI(new CustomScrollBarUI());
-        spMessages.setHorizontalScrollBarPolicy(spMessages.HORIZONTAL_SCROLLBAR_NEVER);
-
-        spNewMessage.setBackground(background);
-        spNewMessage.setForeground(foreground);
-        spNewMessage.setBorder(null);
-        spNewMessage.getVerticalScrollBar().setUI(new CustomScrollBarUI());
-        spNewMessage.setHorizontalScrollBarPolicy(spNewMessage.HORIZONTAL_SCROLLBAR_NEVER);
-
-        // Styles text fields
-        taFilePath.setBackground(background);
-        taFilePath.setBorder(null);
-        taFilePath.setEditable(false);
-        taFilePath.setLineWrap(true);
-
-        taNewMessage.setLineWrap(true);
-
-        // Styles buttons
-        cmdSend.setContentAreaFilled(false);
-        cmdSend.setBackground(background);
-        cmdSend.setBorder(new LineBorder(foreground, buttonBorder));
-        cmdSend.setForeground(foreground);
-
-        cmdAttach.setContentAreaFilled(false);
-        cmdAttach.setBackground(background);
-        cmdAttach.setBorder(new LineBorder(foreground, buttonBorder));
-        cmdAttach.setForeground(foreground);
-
-        cmdClear.setContentAreaFilled(false);
-        cmdClear.setBackground(background);
-        cmdClear.setBorder(new LineBorder(foreground, buttonBorder));
-        cmdClear.setForeground(foreground);
-
-        // Sets profile picture of user you're talking to
-        lblProfilePicture.setBorder(new LineBorder(foreground, 2));
-
-        // Styles message tabel
-        tabelMessages.setShowVerticalLines(false);
-        tabelMessages.setShowHorizontalLines(true);
-        tabelMessages.setBackground(background);
-        tabelMessages.setForeground(foreground);
-        tabelMessages.setGridColor(highlight);
-        tabelMessages.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tabelMessages.getColumnModel().getColumn(0).setPreferredWidth(150);
-        tabelMessages.getColumnModel().getColumn(1).setPreferredWidth(568);
-
-        // Creates an info packet to send the username of the person you're talking to
-        InfoPacket FindUserDetails = new InfoPacket();
-        FindUserDetails.SetService("GUD");
-        FindUserDetails.SetSingleData(recieveUsername);
+        lbl_sendMessageTo.setText(friendName);
 
         try {
-
-            // Creates connection with music server
-            Socket MainServer = new Socket("localhost", 9090);
-            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
-
-            // Sends username to server
-            OutToServer.writeObject(FindUserDetails);
-
-            // Recieves users profile picture from server
-            InfoPacket ServerReply = (InfoPacket) FromServerStream.readObject();
-
-            //Closes connection to music server
-            OutToServer.close();
-            FromServerStream.close();
-
-            // Gets a byte array of the profile pictuew
-            byte[] ProfileImage = (byte[]) ServerReply.GetByteData();
-
-            // Saves the profile picture locally
-            //String profilePicture = "/Users/edwardcelella/Documents/University/Systems Software/Shitify/Sams Work/MusicServer/res/Photos" + recieveUsername + ".png";
-            String profilePicture = new File("res/Photos/" + recieveUsername + ".png").getAbsolutePath();
-            FileOutputStream FileOut = new FileOutputStream(profilePicture);
-            FileOut.write(ProfileImage);
-
-            // Displays profile picture in label
-            lblProfilePicture.setIcon(ResizeImage(profilePicture));
-
             // Creates connection with messaging server
             address = InetAddress.getByName("localhost");
             msgServer = new Socket(address, 9091);
             inFromMsgServer = new DataInputStream(msgServer.getInputStream());
             outToMsgServer = new DataOutputStream(msgServer.getOutputStream());
-
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
         // Runs thread which continuously updates message table
         Thread th = new Thread(new Runnable() {
             public void run() {
-                SyncChatMessages();
+
             }
         });
         th.start();
@@ -193,6 +107,7 @@ public class Chat extends javax.swing.JFrame {
         sp_sendMessage = new javax.swing.JScrollPane();
         ta_sendMessage = new javax.swing.JTextArea();
         lbl_cancel = new javax.swing.JLabel();
+        lbl_sendMessageTo = new javax.swing.JLabel();
         pnl_Right = new javax.swing.JPanel();
         sp_dialogue = new javax.swing.JScrollPane();
         ta_dialogue = new javax.swing.JTextArea();
@@ -235,7 +150,7 @@ public class Chat extends javax.swing.JFrame {
 
         lbl_sendMessage.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         lbl_sendMessage.setForeground(new java.awt.Color(57, 113, 177));
-        lbl_sendMessage.setText("Send Message:");
+        lbl_sendMessage.setText("Send Message to:");
 
         btn_chooseFile.setBackground(new java.awt.Color(57, 113, 177));
         btn_chooseFile.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -262,6 +177,9 @@ public class Chat extends javax.swing.JFrame {
             }
         });
 
+        lbl_sendMessageTo.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        lbl_sendMessageTo.setForeground(new java.awt.Color(57, 113, 177));
+
         javax.swing.GroupLayout pnl_leftLayout = new javax.swing.GroupLayout(pnl_left);
         pnl_left.setLayout(pnl_leftLayout);
         pnl_leftLayout.setHorizontalGroup(
@@ -269,30 +187,36 @@ public class Chat extends javax.swing.JFrame {
             .addGroup(pnl_leftLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnl_leftLayout.createSequentialGroup()
-                        .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnl_leftLayout.createSequentialGroup()
-                                .addComponent(btn_sendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lbl_cancel))
+                    .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnl_leftLayout.createSequentialGroup()
                             .addComponent(lbl_sendMessage)
-                            .addComponent(sp_sendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(seperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lbl_sendMessageTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(pnl_leftLayout.createSequentialGroup()
+                            .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(pnl_leftLayout.createSequentialGroup()
+                                    .addComponent(btn_sendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(lbl_cancel))
+                                .addComponent(sp_sendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(seperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(0, 0, Short.MAX_VALUE)))
                     .addGroup(pnl_leftLayout.createSequentialGroup()
                         .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(ta_chosenFile, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                             .addGroup(pnl_leftLayout.createSequentialGroup()
                                 .addComponent(lbl_chooseFile)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_chooseFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(btn_chooseFile, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
         pnl_leftLayout.setVerticalGroup(
             pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_leftLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbl_sendMessage)
+                .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_sendMessage)
+                    .addComponent(lbl_sendMessageTo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sp_sendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -399,7 +323,20 @@ public class Chat extends javax.swing.JFrame {
     }//GEN-LAST:event_pnl_toolbarMouseDragged
 
     private void btn_sendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendMessageActionPerformed
-        // TODO add your handling code here:
+
+        {
+            // Checks if text message has been written to be sent
+
+            String message = ta_sendMessage.getText();
+            // Removes line breaks
+            message = message.replaceAll("\r", " ").replaceAll("\n", " ");
+            try {
+                outToMsgServer.writeUTF(message);
+            } catch (IOException ex) {
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
     }//GEN-LAST:event_btn_sendMessageActionPerformed
 
     private void btn_chooseFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_chooseFileActionPerformed
@@ -421,6 +358,7 @@ public class Chat extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_cancel;
     private javax.swing.JLabel lbl_chooseFile;
     private javax.swing.JLabel lbl_sendMessage;
+    private javax.swing.JLabel lbl_sendMessageTo;
     private javax.swing.JLabel lbl_title;
     private javax.swing.JPanel pnl_Right;
     private javax.swing.JPanel pnl_left;
@@ -432,166 +370,5 @@ public class Chat extends javax.swing.JFrame {
     private javax.swing.JTextArea ta_dialogue;
     private javax.swing.JTextArea ta_sendMessage;
     // End of variables declaration//GEN-END:variables
-
-    public void SyncChatMessages() {
-
-        // Joins both usernames in alphabetical order and joins them to get chat file name
-        int compare = username.compareTo(recieveUsername);
-        if (compare < 0) {
-            chatName = username + recieveUsername;
-        } else {
-            chatName = recieveUsername + username;
-        }
-
-        // Gets filepath and file
-        String chatFilePath = new File("res/Chats/" + chatName + ".txt").getAbsolutePath();
-        chatFile = new File(chatFilePath);
-
-        // Used to add rows to tabel
-        DefaultTableModel tabelModel = (DefaultTableModel) tabelMessages.getModel();
-
-        int lineCount = 0;
-        int rowNum = 0;
-        int height, newHeight, expansion, length;
-
-        try {
-            // Checks if file exists
-            if (!(chatFile.exists())) {
-                // Creates file if one isn't present
-                chatFile.createNewFile();
-            } else {
-
-                // Outputs all local stored messages
-                FileReader fileIn = new FileReader(chatFilePath);
-                BufferedReader bufferIn = new BufferedReader(fileIn);
-                String line = null;
-
-                // Outputs locally stored messages
-                while ((line = bufferIn.readLine()) != null) {
-
-                    // Seperates username from message
-                    java.util.List<String> lineBreakdown = Arrays.asList(line.split("§"));
-                    // Stores message length
-                    length = lineBreakdown.get(1).length();
-                    // Adds html tags so text wraps
-                    line = "<html>" + lineBreakdown.get(1) + "</html>";
-
-                    // Adds username and message to tabel
-                    Object[] row = {lineBreakdown.get(0), line};
-                    tabelModel.addRow(row);
-
-                    // Scrolls to bottom of scroll pane
-                    spMessages.getVerticalScrollBar().setValue(spMessages.getVerticalScrollBar().getMaximum());
-
-                    // Calculates requires row height to display message
-                    height = tabelMessages.getRowHeight(rowNum);
-                    newHeight = tabelMessages.prepareRenderer(tabelMessages.getCellRenderer(rowNum, 1), rowNum, 1).getPreferredSize().height;
-                    expansion = (length / 50);
-                    if (expansion > 1) {
-                        newHeight = newHeight * expansion;
-                    }
-
-                    // Alters row height
-                    tabelMessages.setRowHeight(rowNum, newHeight);
-
-                    rowNum += 1;
-                    lineCount += 1;
-
-                }
-                bufferIn.close();
-                fileIn.close();
-            }
-
-            //Sends chatname and amount of lines saved on the client file to the server
-            outToMsgServer.writeUTF(chatName);
-            outToMsgServer.writeUTF(username);
-            outToMsgServer.writeUTF(Integer.toString(lineCount));
-
-            // Loop to catch all incoming messages 
-            String recieveLine = null;
-
-            while (cont) {
-
-                // Gets new message from server
-                recieveLine = inFromMsgServer.readUTF();
-
-                // Seperates username from message
-                java.util.List<String> lineBreakdown = Arrays.asList(recieveLine.split("§"));
-                // Stores message length
-                length = lineBreakdown.get(2).length();
-                // Adds html tags so text wraps
-                recieveLine = "<html>" + lineBreakdown.get(2) + "</html>";
-
-                // Outputs line to GUI
-                Object[] rowData = {lineBreakdown.get(1), recieveLine};
-                tabelModel.addRow(rowData);
-
-                // Scrolls to bottom of scroll pane
-                spMessages.getVerticalScrollBar().setValue(spMessages.getVerticalScrollBar().getMaximum());
-
-                // Calculates requires row height to display message
-                height = tabelMessages.getRowHeight(rowNum);
-                newHeight = tabelMessages.prepareRenderer(tabelMessages.getCellRenderer(rowNum, 1), rowNum, 1).getPreferredSize().height;
-                expansion = (length / 50);
-                if (expansion > 1) {
-                    newHeight = newHeight * expansion;
-                }
-
-                // Alters row height
-                tabelMessages.setRowHeight(rowNum, newHeight);
-
-                //Writes new line to local text file
-                FileWriter fileOut = new FileWriter(chatFile.getAbsolutePath(), true);
-                BufferedWriter bufferOut = new BufferedWriter(fileOut);
-                bufferOut.write(lineBreakdown.get(1) + "§" + lineBreakdown.get(2));
-                bufferOut.newLine();
-                bufferOut.close();
-                fileOut.close();
-
-                rowNum += 1;
-
-                if (lineBreakdown.get(0).equals("F")) {
-
-                    // Creates new buffer for file
-                    byte[] fileBtyes = new byte[Integer.parseInt(lineBreakdown.get(3))];
-
-                    // Reads byte array in from client
-                    inFromMsgServer.readFully(fileBtyes, 0, fileBtyes.length);
-
-                    // File path to home 
-                    String homeLocation = System.getProperty("user.home");
-
-                    System.out.println(homeLocation);
-                    // Saves file
-                    File fileSavePath = new File(homeLocation + "/Downloads/" + lineBreakdown.get(4));
-                    FileOutputStream FileOut = new FileOutputStream(fileSavePath);
-                    FileOut.write(fileBtyes);
-                    FileOut.close();
-                }
-
-            }
-
-        } catch (IOException e) {
-            // Prints error message
-            System.out.println(e.getMessage());
-        }
-
-    }
-
-    public void closeWindow() {
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                cont = false;
-                try {
-                    outToMsgServer.writeUTF("E" + "§" + "E");
-                } catch (IOException e2) {
-                    // Prints error message
-                    System.out.println(e2.getMessage());
-                }
-                e.getWindow().dispose();
-            }
-
-        });
 
 }

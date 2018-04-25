@@ -23,7 +23,7 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Send {
+public class Send implements Runnable{
       // Declares global variables
     Socket client;
     DataOutputStream outToClient;
@@ -37,7 +37,7 @@ public class Send {
     JTextArea logTextArea;
     JScrollPane logScrollPane;
 
-    public Send(Socket _client, JTextArea _logTextArea, JScrollPane _logScrollPane){
+    public Send(Socket _client, JTextArea _logTextArea){
 
         try{
             // Creates output and input stream to the client
@@ -51,7 +51,6 @@ public class Send {
         
         // Passes text area and scroll pane for text append
         logTextArea = _logTextArea;
-        logScrollPane = _logScrollPane;
     }
     
     public void run(){
@@ -88,17 +87,6 @@ public class Send {
             logScrollPane.getVerticalScrollBar().setValue(logScrollPane.getVerticalScrollBar().getMaximum());
 
             // Runs thread which continuously updates message table
-            Thread th2 = new Thread((Runnable) new Receive(inFromClient, chatFile, client, logTextArea, logScrollPane, chatName));
-            th2.start();
-
-            while(th2.getState()!=Thread.State.TERMINATED){
-                if(fileModTime != chatFile.lastModified()){
-                    
-                    fileModTime = chatFile.lastModified();
-                    clientLineCount = sendMessages(clientLineCount, chatFile);
-                    
-                }
-            }
         }
         catch(IOException e){
                 System.out.println(e.getMessage());

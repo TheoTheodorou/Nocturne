@@ -108,7 +108,12 @@ public class UploadSong extends javax.swing.JFrame {
         cbx_genre.setBackground(new java.awt.Color(7, 51, 73));
         cbx_genre.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         cbx_genre.setForeground(new java.awt.Color(255, 255, 255));
-        cbx_genre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Happy", "Sad", "Miserable", "Stressed", "Relieved", "Excited", "Angry" }));
+        cbx_genre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Classical", "Funk", "Jazz", "Rock", "Dance", "Hip-Hop", "Pop", "Soul/R&B", "Folk", "Indie", "Reggae", "Techno" }));
+        cbx_genre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbx_genreActionPerformed(evt);
+            }
+        });
 
         btn_upload.setBackground(new java.awt.Color(57, 113, 177));
         btn_upload.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -188,7 +193,7 @@ public class UploadSong extends javax.swing.JFrame {
                 .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbl_cancel)
                     .addComponent(lbl_chosenFile))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnl_left, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 280, 200));
@@ -377,6 +382,10 @@ public class UploadSong extends javax.swing.JFrame {
     private void icon_exitMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_icon_exitMousePressed
         this.dispose();
     }//GEN-LAST:event_icon_exitMousePressed
+
+    private void cbx_genreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_genreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbx_genreActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_upload;

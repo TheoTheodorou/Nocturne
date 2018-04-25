@@ -115,7 +115,7 @@
                       <Component id="lbl_cancel" min="-2" max="-2" attributes="0"/>
                       <Component id="lbl_chosenFile" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="12" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -211,18 +211,25 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="8">
-                <StringItem index="0" value="None"/>
-                <StringItem index="1" value="Happy"/>
-                <StringItem index="2" value="Sad"/>
-                <StringItem index="3" value="Miserable"/>
-                <StringItem index="4" value="Stressed"/>
-                <StringItem index="5" value="Relieved"/>
-                <StringItem index="6" value="Excited"/>
-                <StringItem index="7" value="Angry"/>
+              <StringArray count="12">
+                <StringItem index="0" value="Classical"/>
+                <StringItem index="1" value="Funk"/>
+                <StringItem index="2" value="Jazz"/>
+                <StringItem index="3" value="Rock"/>
+                <StringItem index="4" value="Dance"/>
+                <StringItem index="5" value="Hip-Hop"/>
+                <StringItem index="6" value="Pop"/>
+                <StringItem index="7" value="Soul/R&amp;B"/>
+                <StringItem index="8" value="Folk"/>
+                <StringItem index="9" value="Indie"/>
+                <StringItem index="10" value="Reggae"/>
+                <StringItem index="11" value="Techno"/>
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbx_genreActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>

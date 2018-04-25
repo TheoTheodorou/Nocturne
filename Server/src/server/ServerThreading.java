@@ -75,7 +75,12 @@ public class ServerThreading implements Runnable {
                         //Sets the current command to Login
                         ToClient.SetCommand("LOGIN");
                         //checks to see if the file exits...
-                        if (userFile.exists() && !userFile.isDirectory()) {
+                        
+                        if (onlineUsers.contains(incomingUsername)) {
+                            ToClient.SetStringData("INCORRECT");
+                        }
+
+                        else if (userFile.exists() && !userFile.isDirectory()) {
                             BufferedReader bufferedReader = new BufferedReader(new FileReader(userFile));
                             String line;
                             //Loop through
@@ -85,6 +90,7 @@ public class ServerThreading implements Runnable {
                                     //adds an active user and passes through the username.
                                     addOnlineUser(incomingUsername);
                                     ToClient.SetStringData("CORRECT");
+
                                     GUI.AddToLog("User : " + ip + " successfully logged in.");
                                     break;
                                 }
@@ -94,9 +100,7 @@ public class ServerThreading implements Runnable {
                             ToClient.SetStringData("INCORRECT");
                             GUI.AddToLog("Incorrect Log in attempt from: " + ip);
                         }
-                        if (onlineUsers.contains(incomingUsername)) {
-                            ToClient.SetStringData("INCORRECT");
-                        }
+
                         //send the datapacket to the client
                         ToClientStream.writeObject(ToClient);
                         break;
@@ -157,7 +161,7 @@ public class ServerThreading implements Runnable {
                         //Writes the information to file
                         new File("media/music").mkdirs();
                         new File("media/albums").mkdirs();
-                        String FileName = SongInformation.get(2) + "," + SongInformation.get(3);
+                        String FileName = SongInformation.get(0).toString();
                         File MusicDirectory = new File("media/music/" + FileName + ".mp3");
                         File PhotoDirectory = new File("media/albums/" + FileName + ".png");
                         //upload the song 

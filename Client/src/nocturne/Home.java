@@ -1196,19 +1196,35 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_musicPPActionPerformed
 
     private void btn_homeLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_homeLogOutActionPerformed
-        Logout();
+        try {
+            Logout();
+        } catch (IOException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_homeLogOutActionPerformed
 
     private void btn_musicLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_musicLogOutActionPerformed
-        Logout();
+        try {
+            Logout();
+        } catch (IOException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_musicLogOutActionPerformed
 
     private void lbl_exitMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_exitMousePressed
-        Logout();
+        try {
+            Logout();
+        } catch (IOException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_lbl_exitMousePressed
 
     private void btn_friendsLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsLogOutActionPerformed
-        Logout();
+        try {
+            Logout();
+        } catch (IOException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_friendsLogOutActionPerformed
 
     private void btn_friendsAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsAcceptActionPerformed
@@ -1569,44 +1585,23 @@ public class Home extends javax.swing.JFrame {
         ta_homePosts.setText("");
 
         for (int i = 0; i < FriendsPosts.size(); i++) {
-            ta_homePosts.append(FriendsPosts.get(i));
+            ta_homePosts.append(FriendsPosts.get(i)+"\n");
             ta_homePosts.setCaretPosition(ta_homePosts.getDocument().getLength());
         }
         OutToServer.close();
         FromServerStream.close();
     }
 
-    public void Logout() {
-        // Stops playing music on logout
-        if (isMusicPlaying == true) {
-            AudioPlayer.player.stop(audioStream);
-            songTimer.stop();
-        }
-        //       C.SetRequest(false);
-        //      D.SetRequest(false);
+    public void Logout() throws IOException {
 
-        //message to server to say disconnected user
         Datapacket LoggingOff = new Datapacket();
 
         LoggingOff.SetCommand("LOGOUT");
         LoggingOff.SetStringData(username);
 
-        File Pdir = new File("media/photos");
-        File Mdir = new File("media/music");
 
         try {
-            //Send the NamePass infopacket
-            //Remove Files in Music and Photo Folders
-            for (File file : Pdir.listFiles()) {
-                if (!file.isDirectory()) {
-                    file.delete();
-                }
-            }
-            for (File file : Mdir.listFiles()) {
-                if (!file.isDirectory()) {
-                    file.delete();
-                }
-            }
+
 
             Socket Server = new Socket("localhost", 9090);
             ObjectOutputStream ToServerStream = new ObjectOutputStream(Server.getOutputStream());
