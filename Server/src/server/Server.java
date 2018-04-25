@@ -18,18 +18,18 @@ import datapacket.Datapacket;
 
 public class Server {
     public static void main(String[] args) throws IOException {
-        
+        //When the server is running, display the server GUI
         ServerGUI serverGUI = new ServerGUI();
         serverGUI.setVisible(true);
         
         try {
             ServerSocket server = new ServerSocket(9090);
-            
+                    //Constantly "listening" (waiting) for a client.
                         while (true) 
                     {  
                         
-                        //Always waiting for a client. 
-                        //When a client connects create a new thread to handle the service
+                         
+                        //When a client connects create a new thread to handle the connection and commands.
                         //Then start the thread. And continue to wait for more clients;
                         
                         System.out.println("Waiting for client...");
@@ -38,12 +38,14 @@ public class Server {
                         st.SetSocket(server.accept());
                         st.SetGUI(serverGUI);
                         Thread t1 = new Thread(st);
+                        //Starts the thread
                         t1.start();                       
                     }            
         }
         //Catch any IOExceptions and print the error
         catch (IOException e)
         {
+            //Print any errors
             System.err.println("Error - " + e.getMessage());
         }
     }
