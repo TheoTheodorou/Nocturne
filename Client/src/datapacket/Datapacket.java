@@ -22,6 +22,8 @@ public class Datapacket implements Serializable {
     private String UserName;
     //This is a standard array.
     private ArrayList MultipleData;
+    //This is an array which stores other arrays.
+    private ArrayList<ArrayList<String>> MultiDimensionArrayList;
     //This is an array of bytes which is used to send data. For example a file.
     private byte[] FirstByteArray;
     //This is the same as the first byte array, but this is used when you want to send another file in the same datapacket.
@@ -59,6 +61,14 @@ public class Datapacket implements Serializable {
     public ArrayList<String> GetArray() {
         return MultipleData;
     }
+    
+    public void SetMultipleArray(ArrayList<ArrayList<String>> MultipleArrayData) {
+      this.MultiDimensionArrayList = MultipleArrayData;
+    }
+    
+    public ArrayList<ArrayList<String>> GetMultipleArray() {
+        return MultiDimensionArrayList;
+    }
 
     public void SetFirstByte(byte[] FirstByte) {
         this.FirstByteArray = FirstByte;
@@ -76,6 +86,4 @@ public class Datapacket implements Serializable {
         return SecondByteArray;
     }
 }
-
-
 
