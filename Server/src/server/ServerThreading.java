@@ -33,6 +33,7 @@ public class ServerThreading implements Runnable {
     public Datapacket ToClient = new Datapacket();
     UserHandling user = new UserHandling();
     public static List<String> onlineUsers = new ArrayList<String>();
+
     //Sets the socket based of the connecting client
     public ServerThreading SetSocket(Socket client) {
         this.clientSocket = client;
@@ -47,7 +48,7 @@ public class ServerThreading implements Runnable {
 
     public void run() {
         try {
-       
+
             //Create an I/O stream to send to user        
             ObjectInputStream FromClientStream = new ObjectInputStream(clientSocket.getInputStream());
             ObjectOutputStream ToClientStream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -65,8 +66,8 @@ public class ServerThreading implements Runnable {
                     //User Log in 
                     case "LOGIN":
                         //Retreieves the username and password from the client
-                         GUI.AddToLog("User : " + ip + " attempting login...");
-                        
+                        GUI.AddToLog("User : " + ip + " attempting login...");
+
                         String incomingUsername = InFromClient.GetArray().get(0);
                         String incomingUserpassword = InFromClient.GetArray().get(1);
 
@@ -88,9 +89,13 @@ public class ServerThreading implements Runnable {
                                     break;
                                 }
                             }
+
                         } else { //there was no match...
                             ToClient.SetStringData("INCORRECT");
                             GUI.AddToLog("Incorrect Log in attempt from: " + ip);
+                        }
+                        if (onlineUsers.contains(incomingUsername)) {
+                            ToClient.SetStringData("INCORRECT");
                         }
                         //send the datapacket to the client
                         ToClientStream.writeObject(ToClient);
@@ -127,7 +132,7 @@ public class ServerThreading implements Runnable {
                             user.createUser(UsersInfo);
                             //store the users profile picture
                             byte[] Image = (byte[]) InFromClient.GetByteData();
-                            new File ("media/profiles").mkdirs();
+                            new File("media/profiles").mkdirs();
                             File PhotoDirectory = new File("media/profiles/" + userName + ".png");
                             FileOutputStream FileOut = new FileOutputStream(PhotoDirectory);
                             FileOut.write(Image);
@@ -406,6 +411,7 @@ public class ServerThreading implements Runnable {
             GUI.AddToLog(e.getMessage());
         }
     }
+
     //adds an active user
     public void addOnlineUser(String username) {
         try {
@@ -418,6 +424,7 @@ public class ServerThreading implements Runnable {
             GUI.AddToLog("Could not add user to online register! : " + e);
         }
     }
+
     //removes an active user, for example when logging our
     public String removeOnlineUser(String username) {
         int userIndex = onlineUsers.indexOf(username);
@@ -431,6 +438,7 @@ public class ServerThreading implements Runnable {
         }
         return "success";
     }
+
     //retrieves an array of all the user who are active
     public ArrayList<String> GetOnlineFriends(ArrayList<String> Friends) {
         ArrayList<String> OnlineFriends = new ArrayList();

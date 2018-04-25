@@ -66,9 +66,8 @@ public class Home extends javax.swing.JFrame {
     int songLength;
     int incrementProgress;
     int currentProgress;
-    
+
     public ThreadTimer Timer1 = new ThreadTimer();
-  
 
     public Home(String currentUsername) throws IOException, ClassNotFoundException {
         initComponents();
@@ -83,7 +82,7 @@ public class Home extends javax.swing.JFrame {
         Timer1.SetForm(this);
         Timer1.SetRequest(true);
         Thread t1 = new Thread(Timer1);
-        t1.start(); 
+        t1.start();
         CardLayout card = (CardLayout) pnl_main.getLayout();
         card.show(pnl_main, "cardHome");
     }
@@ -97,9 +96,9 @@ public class Home extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lbl_title = new javax.swing.JLabel();
         pnl_toolbar = new javax.swing.JPanel();
         lbl_exit = new javax.swing.JLabel();
-        lbl_title = new javax.swing.JLabel();
         pnl_main = new javax.swing.JPanel();
         pnl_home = new javax.swing.JPanel();
         pnl_homePanel = new javax.swing.JPanel();
@@ -178,6 +177,10 @@ public class Home extends javax.swing.JFrame {
         btn_musicExit = new javax.swing.JButton();
         btn_updatedMusic = new javax.swing.JButton();
 
+        lbl_title.setFont(new java.awt.Font("Segoe UI Black", 0, 12)); // NOI18N
+        lbl_title.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_title.setText("Music");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         setSize(new java.awt.Dimension(400, 400));
@@ -207,26 +210,18 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        lbl_title.setFont(new java.awt.Font("Segoe UI Black", 0, 12)); // NOI18N
-        lbl_title.setForeground(new java.awt.Color(255, 255, 255));
-        lbl_title.setText("Music");
-
         javax.swing.GroupLayout pnl_toolbarLayout = new javax.swing.GroupLayout(pnl_toolbar);
         pnl_toolbar.setLayout(pnl_toolbarLayout);
         pnl_toolbarLayout.setHorizontalGroup(
             pnl_toolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_toolbarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lbl_title, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
+                .addContainerGap(570, Short.MAX_VALUE)
                 .addComponent(lbl_exit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         pnl_toolbarLayout.setVerticalGroup(
             pnl_toolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_toolbarLayout.createSequentialGroup()
-                .addGroup(pnl_toolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lbl_title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_exit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(lbl_exit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -1032,9 +1027,13 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_lbl_exitMouseClicked
 
     private void btn_friendsChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsChatActionPerformed
-        Chat chat = new Chat();
-        chat.setLocationRelativeTo(null);
-        chat.setVisible(true);
+
+
+        if (list_friendsActive.getSelectedValue() != null) {
+            Chat chat = new Chat(username, list_friendsActive.getSelectedValue());
+            chat.setLocationRelativeTo(null);
+            chat.setVisible(true);
+        }
     }//GEN-LAST:event_btn_friendsChatActionPerformed
 
     private void btn_friendsExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsExitActionPerformed
@@ -1328,10 +1327,9 @@ public class Home extends javax.swing.JFrame {
 
             icon_friendsPP.setIcon(ResizeImage(PhotoDirectory.getPath()));
             lbl_friendsUsername.setText("Username: " + UsernameToFind);
-            lbl_friendsName.setText("First Name: " + UserInformation.get(0).get(0)+" "+ UserInformation.get(0).get(1));
+            lbl_friendsName.setText("First Name: " + UserInformation.get(0).get(0) + " " + UserInformation.get(0).get(1));
             lbl_friendsEmail.setText("Email: " + UserInformation.get(0).get(2));
             lbl_friendsInterests.setText("Preferences: " + UserInformation.get(0).get(3));
-
 
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
