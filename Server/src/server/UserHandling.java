@@ -25,7 +25,7 @@ import java.util.List;
 public class UserHandling {
 
     ServerGUI GUI;
-
+    //Adds all the user information to file
     public void createUser(ArrayList userInfo) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
         // Assign the user details from the given array
@@ -77,53 +77,53 @@ public class UserHandling {
         }
         writer.close();
     }
-
+    //Adds every detail regarding users songs to file
     public void addSong(ArrayList<String> songInformation) throws IOException {
-
+        // Assign the song details from the given array
         String username = songInformation.get(0);
         String artistName = songInformation.get(2);
         String songName = songInformation.get(3);
         String genre = songInformation.get(4);
-
+        //Creates a new file
         File musicFile = new File("users/" + username + "songs.txt");
         musicFile.createNewFile();
-
+        //Exports the information to the file
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(musicFile, true)));
         writer.println(username + "," + artistName + "," + songName + "," + genre);
         writer.close();
 
     }
-
+    //Adds every post made to file
     public void addPost(ArrayList<String> postInformation) throws IOException {
-
+        // Assign the post details from the given array
         String username = postInformation.get(0);
         String postType = postInformation.get(1);
         String message = "", userMood = "";
         new File("media/posts").mkdirs();
         File newUserPost = new File("media/posts/posts.txt");
         newUserPost.createNewFile();
-
+        //If the user uploads a song it creates a post, thus this post needs to be stored
         if ("SongUpload".equals(postType)) {
 
             message = postInformation.get(2) + "," + postInformation.get(3);
-
+            //Output to file
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(newUserPost, true)));
             writer.println(username + "," + postType + "," + message);
             writer.close();
-
+        //but if its just a standard post...
         } else if ("TextPost".equals(postType)) {
 
             message = postInformation.get(2);
             userMood = postInformation.get(3);
-
+            //Output to file
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(newUserPost, true)));
             writer.println(username + "," + postType + "," + message);
             writer.close();
         }
     }
-
+    //Checks the text files to see if a username has been taken (validation check)
     public boolean DoesUsernameExist(String username) {
-
+        //Simple search
         boolean Exists = false;
         File userFile = new File("users/" + username);
         if (userFile.exists() && userFile.isDirectory()) {
@@ -133,19 +133,19 @@ public class UserHandling {
         }
         return Exists;
     }
-
+    //Checks to see if two users are already friends (validation check)
     public boolean AlreadyFriends(ArrayList<String> users) throws IOException {
         boolean AlreadyFriends = false;
         //User[0] to retrieve friends for
         //if User[1] is in the ArrayList then they are already friends
         ArrayList<String> AllFriends = GetUsersFriends(users.get(0));
-
+        //checks their current friends 
         for (int i = 0; i < AllFriends.size(); i++) {
             if (users.get(1).equals(AllFriends.get(i))) {
                 AlreadyFriends = true;
             }
         }
-
+        //Checks the users friend requests
         ArrayList<String> FriendRequests = GetUsersFriendRequests(users.get(0));
 
         for (int i = 0; i < FriendRequests.size(); i++) {
@@ -156,10 +156,11 @@ public class UserHandling {
 
         return AlreadyFriends;
     }
-
+    //Reads in from file all of the users friends
     public ArrayList<String> GetUsersFriends(String username) throws FileNotFoundException, IOException {
-
+        //If there isnt a file, create one
         File friendFile = new File("users/" + username + "/friends.txt");
+        //createnewfile() function is a boolean so if its set to true then it will just carry on.
         friendFile.createNewFile();
 
         BufferedReader reader = new BufferedReader(new FileReader(friendFile));
@@ -174,12 +175,12 @@ public class UserHandling {
         ArrayList<String> returnList = new ArrayList(friendList);
         return returnList;
     }
-
+    //Reads in from file all of the users friend requests
     public ArrayList<String> GetUsersFriendRequests(String username) throws FileNotFoundException, IOException {
-
+        //If there isnt a file, create one
         File newUserFile = new File("users/" + username + "/friendRequests.txt");
         newUserFile.createNewFile();
-
+        //createnewfile() function is a boolean so if its set to true then it will just carry on.
         BufferedReader reader = new BufferedReader(new FileReader(newUserFile));
         String line;
         List<String> friendList = new ArrayList<String>();
@@ -192,9 +193,9 @@ public class UserHandling {
         ArrayList<String> FriendsList = new ArrayList(friendList);
         return FriendsList;
     }
-
+    //Creates a new friend request between to users and stores the information to file
     public void NewFriendRequest(ArrayList<String> Users) throws FileNotFoundException, IOException {
-
+        
         String firstUser = Users.get(0);
         String secondUser = Users.get(1);
 
@@ -212,7 +213,7 @@ public class UserHandling {
         secondWriter.println(firstUser);
         secondWriter.close();
     }
-
+    //Retrieves the users song information from file and returns a list
     public ArrayList<String> GetUserSongs(String username) throws FileNotFoundException, IOException {
 
         File newUserFile = new File("users/" + username + "/songs.txt");
@@ -230,7 +231,7 @@ public class UserHandling {
         ArrayList<String> returnList = new ArrayList(songList);
         return returnList;
     }
-
+    //If a user accepts a friend request then the friendship between two user is updated (stored in text file)
     public void AcceptFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
 
         String firstUser = users.get(0);
@@ -250,9 +251,11 @@ public class UserHandling {
         secondWriter.println(firstUser);
         secondWriter.close();
     }
-
+    //If a user declines a friend request then the friend request is removed from file for both users. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void DeclineFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
-
+        //WILL NOT WORK PROPERLY NEEDS FIXING
+        //Get all the information from file, create a temporary array to store the information
+        //Remove the item from said array, print the new array back into the file.
         String firstUser = users.get(0);
         String secondUser = users.get(1);
 
@@ -265,9 +268,10 @@ public class UserHandling {
         BufferedReader secondReader = new BufferedReader(new FileReader(secondUserFile));
         String line1;
         String line2;
-
+        //Read every line in the list
         List<String> firstList = new ArrayList<String>();
         while ((line1 = firstReader.readLine()) != null) {
+            //add it to the list
             firstList.add(line1);
         }
         firstReader.close();
@@ -297,9 +301,10 @@ public class UserHandling {
         }
         secondWriter.close();
     }
-
+    //If a user removes a friend then the friend file is read, changed and updated accordingly. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void RemoveFriend(ArrayList<String> users) throws FileNotFoundException, IOException {
-
+        //Get all the information from file, create a temporary array to store the information
+        //Remove the item from said array, print the new array back into the file.
         String firstUser = users.get(0);
         String secondUser = users.get(1);
 
@@ -344,7 +349,7 @@ public class UserHandling {
         }
         secondWriter.close();
     }
-
+    //Retreives all the users who have the same music preferences
     public ArrayList<String> GetUsernamesOnPreferences(String musicPref) throws IOException {
 
         File preferenceFile = new File("users/preferences/" + musicPref + ".txt");
@@ -364,7 +369,7 @@ public class UserHandling {
         ArrayList<String> returnList = new ArrayList(preferenceList);
         return returnList;
     }
-
+    //Retreives all a users friends posts.
     public ArrayList<String> GetFriendsPosts(ArrayList<String> friends) throws IOException {
 
         String username = "";
