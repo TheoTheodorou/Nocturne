@@ -229,62 +229,79 @@ public class ServerThreading implements Runnable {
                     }
                     //Get Friend Requests
                     case "GET_FRIEND_REQUESTS": {
+                        //Retrieves the users friend requests 
                         ArrayList<String> UsersFriendRequests = user.GetUsersFriendRequests(InFromClient.GetData());
                         ToClient.SetCommand("GET_FRIEND_REQUESTS");
                         ToClient.SetArray(UsersFriendRequests);
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client requested to see their pending friend requests
                         GUI.AddToLog(InFromClient.GetData() + " reqested to see their friend requests");
                         break;
                     }
                     //Get Users based on Prefernces
                     case "GET_USERS_ON_PREFERENCE": {
+                        //retrieves the users preferences
                         ArrayList<String> Users = user.GetUsernamesOnPreferences(InFromClient.GetData());
                         ToClient.SetCommand("GET_USERS_ON_PREFERENCE");
                         ToClient.SetArray(Users);
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client requested to view users based on a preference
                         GUI.AddToLog(ip + " requested to get users based on preferences");
                         break;
                     }
-
                     //Accept Friend Request
                     case "ACCEPT_FRIEND_REQUEST": {
+                        //accepts the friend request
                         user.AcceptFriendRequest(InFromClient.GetArray());
-                        ToClient.SetCommand("GFR");
+                        ToClient.SetCommand("ACCEPT_FRIEND_REQUEST");
                         ToClient.SetSingleData("Accepted");
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client accepted the friend request and from who
                         GUI.AddToLog(InFromClient.GetArray().get(0) + " accepted " + InFromClient.GetArray().get(1) + " friend request");
                         break;
                     }
                     //Decline Friend Request
                     case "DECLINE_FRIEND_REQUEST": {
+                        //declines the friend request
                         user.DeclineFriendRequest(InFromClient.GetArray());
-                        Datapacket Reply = new Datapacket();
-                        ToClient.SetCommand("DFR");
+                        //Datapacket Reply = new Datapacket();
+                        ToClient.SetCommand("DECLINE_FRIEND_REQUEST");
                         ToClient.SetSingleData("Declined");
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client declined the friend request and from who
                         GUI.AddToLog(InFromClient.GetArray().get(0) + " declined " + InFromClient.GetArray().get(1) + " friend request");
                         break;
                     }
                     //Get My Songs
                     case "GET_MY_SONGS": {
+                        //retreives all the users songs
                         ArrayList<String> MySongs = user.GetUserSongs(InFromClient.GetData());
-                        ToClient.SetCommand("GMS");
+                        ToClient.SetCommand("GET_MY_SONGS");
                         ToClient.SetArray(MySongs);
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client requested to view their songs
                         GUI.AddToLog(ip + " requests to see " + InFromClient.GetData() + " songs");
                         break;
                     }
-                    //Delete FRiend
+                    //Delete Friend
                     case "DELETE_FRIEND": {
+                        //deletes a friend
                         user.RemoveFriend(InFromClient.GetArray());
-                        ToClient.SetCommand("DFS");
+                        ToClient.SetCommand("DELETE_FRIEND");
                         ToClient.SetSingleData("Removed");
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(ToClient);
+                        //logs which client deleted a friend and who it was
                         GUI.AddToLog(InFromClient.GetArray().get(0) + "removed " + InFromClient.GetArray().get(1) + " as a friend");
                         break;
                     }
                     //Get user details
-//                    case "GUD": {
+//                    case "GET_USER_DETAILS": {
 //                        String Username = InFromClient.GetData();
 //                        Datapacket UserInformation = new Datapacket();
 //                        ArrayList<String> UsersDetails = db.GetUsersDetails(Username);
@@ -292,7 +309,7 @@ public class ServerThreading implements Runnable {
 //                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
 //                        UsersInfo.add(UsersDetails);
 //                        UsersInfo.add(UserSongs);
-//                        UserInformation.SetService("GUD");
+//                        UserInformation.SetService("GET_USER_DETAILS");
 //                        UserInformation.SetMultipleArray(UsersInfo);
 //                        File PhotoDirectory = new File("res/Photos/" + Username + ".png");
 //                        FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
@@ -305,6 +322,7 @@ public class ServerThreading implements Runnable {
 //                    }
                     //Get Friends Posts
                     case "GET_POSTS": {
+                        //retrieves the users data
                         String Username = InFromClient.GetData();
                         ArrayList<String> Friends = user.GetUsersFriends(Username);
                         //Add own username to retrieve own posts
@@ -313,13 +331,17 @@ public class ServerThreading implements Runnable {
                         Datapacket FriendsPosts = new Datapacket();
                         FriendsPosts.SetCommand("GET_POSTS");
                         FriendsPosts.SetArray(UserPosts);
+                        //sends the datapacket to the client
                         ToClientStream.writeObject(FriendsPosts);
+                        //logs which user requested to view posts
                         GUI.AddToLog(Username + " requests to see their friends posts");
                         break;
                     }
-//                    //DoWnload Song
-                    case "DWS": {
+                    //Download Song
+                    case "DOWNLOAD_SONG": {
+                        //creates a new datapacket
                         Datapacket SongData = new Datapacket();
+                        //retrieves all the song data
                         File MusicDirectory = new File("media/music/" + InFromClient.GetData() + ".mp3");
                         File PhotoDirectory = new File("media/albums/" + InFromClient.GetData() + ".png");
                         FileInputStream SongFile = new FileInputStream(MusicDirectory);
@@ -328,54 +350,56 @@ public class ServerThreading implements Runnable {
                         FileInputStream PhotoFile = new FileInputStream(PhotoDirectory);
                         byte[] buffer2 = new byte[PhotoFile.available()];
                         PhotoFile.read(buffer2);
-                        SongData.SetCommand("DWS");
+                        SongData.SetCommand("DOWNLOAD_SONG");
                         SongData.SetFirstByte(buffer);
                         SongData.SetSecondByte(buffer2);
+                        //send the datapacket to the client
                         ToClientStream.writeObject(SongData);
+                        //logs which user is downloading the song data.
                         GUI.AddToLog(ip + " is downloading the song and cover photo for " + InFromClient.GetData());
                         break;
                     }
                     default:
+                        //log an invalid command sent by a client
                         GUI.AddToLog(ip + " has sent an invalid command");
                         break;
                 }
             }
+            //close the streams
             FromClientStream.close();
             ToClientStream.close();
         } catch (IOException | ClassNotFoundException e) {
+            //log any errors
             GUI.AddToLog(e.getMessage());
-
         }
     }
-
+    //adds an active user
     public void addActiveUser(String username) {
         try {
             onlineUsers.add(username);
 
         } catch (Exception e) {
-            System.out.println("Could not add user to online register");
-            GUI.AddToLog("Could not add user to online register!");
+            //logs any errors
+            System.out.println("Could not add user to online register : " + e);
+            GUI.AddToLog("Could not add user to online register! : " + e);
         }
-
     }
-
+    //removes an active user, for example when logging our
     public String removeActiveUser(String username) {
         int userIndex = onlineUsers.indexOf(username);
         try {
             onlineUsers.remove(userIndex);
         } catch (Exception e) {
-            System.out.println("Could not remove user from online register");
-            GUI.AddToLog("Could not remove user from online register");
+            //logs any errors
+            System.out.println("Could not remove user from online register : " + e);
+            GUI.AddToLog("Could not remove user from online register! : " + e);
         }
         return "success";
     }
-
+    //retrieves an array of all the user who are active
     public ArrayList<String> GetActiveFriends(ArrayList<String> Friends) {
-
-        //GUI.AddToLog(onlineusers.get(0).toString());
         ArrayList<String> ActiveFriends = new ArrayList();
         String CurrentFriend = "";
-
         for (int i = 0; i < Friends.size(); i++) {
             CurrentFriend = Friends.get(i);
             if (onlineUsers.contains(CurrentFriend)) {
@@ -383,8 +407,6 @@ public class ServerThreading implements Runnable {
                 ActiveFriends.add(CurrentFriend);
             }
         }
-
         return ActiveFriends;
     }
-
 }
