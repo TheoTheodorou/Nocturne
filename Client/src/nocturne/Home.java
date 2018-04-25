@@ -1305,10 +1305,10 @@ public class Home extends javax.swing.JFrame {
         FindUserDetails.SetStringData(UsernameToFind);
 
         try {
-            Socket MainServer = new Socket("localhost", 9090);
+            Socket Server = new Socket("localhost", 9090);
 
-            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             OutToServer.writeObject(FindUserDetails);
 
@@ -1434,10 +1434,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     public void RefreshFriends() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
@@ -1463,10 +1463,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     public void RefreshOnlineFriends() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
@@ -1492,10 +1492,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     public void RefreshFriendRequests() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
@@ -1521,10 +1521,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     public void RefreshSongs() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
@@ -1551,10 +1551,10 @@ public class Home extends javax.swing.JFrame {
 
     public void RefreshPosts() throws IOException, ClassNotFoundException {
 
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket GetFriendsPosts = new Datapacket();
         //GET MY FRIENDS
@@ -1571,16 +1571,6 @@ public class Home extends javax.swing.JFrame {
         ta_homePosts.setText("");
 
         for (int i = 0; i < FriendsPosts.size(); i++) {
-//            String PostFormat = "";
-//            if ("TextPost".equals(FriendsPosts.get(i).get(4))) {
-//                if ("Select Mood:".equals(FriendsPosts.get(i).get(3))) {
-//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + "\n";
-//                } else {
-//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + " - Feeling " + FriendsPosts.get(i).get(3) + "\n";
-//                }
-//            } else if ("SongUpload".equals(FriendsPosts.get(i).get(4))) {
-//                PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + " uploaded a new song: " + FriendsPosts.get(i).get(2) + "\n";
-//            }
             ta_homePosts.append(FriendsPosts.get(i));
             ta_homePosts.setCaretPosition(ta_homePosts.getDocument().getLength());
         }
@@ -1620,17 +1610,17 @@ public class Home extends javax.swing.JFrame {
                 }
             }
 
-            Socket MainServer = new Socket("localhost", 9090);
-            ObjectOutputStream ToServerStream = new ObjectOutputStream(MainServer.getOutputStream());
+            Socket Server = new Socket("localhost", 9090);
+            ObjectOutputStream ToServerStream = new ObjectOutputStream(Server.getOutputStream());
             System.out.println("Made Output Stream");
             ToServerStream.writeObject(LoggingOff);
 
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             //Get reply 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
 
-            MainServer.close();
+            Server.close();
 
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
