@@ -127,7 +127,7 @@ public class Home extends javax.swing.JFrame {
         list_friendsActive = new javax.swing.JList<>();
         btn_friendsChat = new javax.swing.JButton();
         pnl_friendsProfile = new javax.swing.JPanel();
-        lbl_friendsPP = new javax.swing.JLabel();
+        icon_friendsPP = new javax.swing.JLabel();
         lbl_friendsUsername = new javax.swing.JLabel();
         lbl_friendsName = new javax.swing.JLabel();
         lbl_friendsEmail = new javax.swing.JLabel();
@@ -511,18 +511,18 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pnl_friendsProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbl_friendsUsername, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnl_friendsProfileLayout.createSequentialGroup()
-                        .addComponent(lbl_friendsPP, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(lbl_friendsName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbl_friendsEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_friendsInterests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbl_friendsInterests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_friendsProfileLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(icon_friendsPP, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         pnl_friendsProfileLayout.setVerticalGroup(
             pnl_friendsProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_friendsProfileLayout.createSequentialGroup()
-                .addComponent(lbl_friendsPP, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(icon_friendsPP, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_friendsUsername)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -594,6 +594,11 @@ public class Home extends javax.swing.JFrame {
         btn_friendsProfile.setForeground(new java.awt.Color(255, 255, 255));
         btn_friendsProfile.setText("Profile");
         btn_friendsProfile.setPreferredSize(new java.awt.Dimension(250, 25));
+        btn_friendsProfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_friendsProfileActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnl_friendsPanelLayout = new javax.swing.GroupLayout(pnl_friendsPanel);
         pnl_friendsPanel.setLayout(pnl_friendsPanelLayout);
@@ -1260,7 +1265,7 @@ public class Home extends javax.swing.JFrame {
     private void btn_friendsRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsRemoveActionPerformed
         String usernameToDelete = list_friendsAll.getSelectedValue();
         Datapacket DeleteUser = new Datapacket();
-        DeleteUser.SetCommand("DFS");
+        DeleteUser.SetCommand("DELETE_FRIEND");
         ArrayList<String> UsersToRemove = new ArrayList();
         UsersToRemove.add(username);
         UsersToRemove.add(usernameToDelete);
@@ -1285,6 +1290,47 @@ public class Home extends javax.swing.JFrame {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_btn_friendsRemoveActionPerformed
+
+    private void btn_friendsProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_friendsProfileActionPerformed
+
+        String UsernameToFind = list_friendsAll.getSelectedValue();
+        Datapacket FindUserDetails = new Datapacket();
+        FindUserDetails.SetCommand("GET_USER_DETAILS");
+        FindUserDetails.SetSingleData(UsernameToFind);
+
+        try {
+            Socket MainServer = new Socket("localhost", 9090);
+
+            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+
+            OutToServer.writeObject(FindUserDetails);
+
+            Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
+
+            OutToServer.close();
+            FromServerStream.close();
+
+            ArrayList<ArrayList<String>> UserInformation = ServerReply.GetMultipleArray();
+
+            new File("media/photos").mkdirs();
+            File PhotoDirectory = new File("media/photos/" + UsernameToFind + ".png");
+
+            byte[] ProfileImage = (byte[]) ServerReply.GetByteData();
+            FileOutputStream FileOut = new FileOutputStream(PhotoDirectory);
+            FileOut.write(ProfileImage);
+
+            icon_friendsPP.setIcon(ResizeImage(PhotoDirectory.getPath()));
+            lbl_friendsUsername.setText("Username: " + UsernameToFind);
+            lbl_friendsName.setText("First Name: " + UserInformation.get(0).get(0)+" "+ UserInformation.get(0).get(1));
+            lbl_friendsEmail.setText("Email: " + UserInformation.get(0).get(2));
+            lbl_friendsInterests.setText("Preferences: " + UserInformation.get(0).get(3));
+
+
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }//GEN-LAST:event_btn_friendsProfileActionPerformed
 
     int xx;
     int xy;
@@ -1319,6 +1365,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton btn_musicUpload;
     private javax.swing.JButton btn_updatedMusic;
     private javax.swing.JComboBox<String> cbx_homeMood;
+    private javax.swing.JLabel icon_friendsPP;
     private javax.swing.JLabel icon_nowPlaying;
     private javax.swing.JLabel icon_pp;
     private javax.swing.JLabel lbl_exit;
@@ -1329,7 +1376,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_friendsIcon;
     private javax.swing.JLabel lbl_friendsInterests;
     private javax.swing.JLabel lbl_friendsName;
-    private javax.swing.JLabel lbl_friendsPP;
     private javax.swing.JLabel lbl_friendsUsername;
     private javax.swing.JLabel lbl_homeClear;
     private javax.swing.JLabel lbl_homeIcon;
