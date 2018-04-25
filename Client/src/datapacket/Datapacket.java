@@ -17,7 +17,7 @@ public class Datapacket implements Serializable {
     //This string is used to identify what process the data should go through.
     private String Command;
     //This string is used to pass single quantities of data.
-    private String SingleData;
+    private String StringData;
     //This string stores the username of the person who is sending/reciving the datapacket.
     private String UserName;
     //This is a standard array.
@@ -46,12 +46,12 @@ public class Datapacket implements Serializable {
         return UserName;
     }
 
-    public void SetSingleData(String Data) {
-        this.SingleData = Data;
+    public void SetStringData(String Data) {
+        this.StringData = Data;
     }
 
     public String GetData() {
-        return SingleData;
+        return StringData;
     }
 
     public void SetArray(ArrayList<String> MultiData) {

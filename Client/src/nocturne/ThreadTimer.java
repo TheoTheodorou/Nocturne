@@ -39,11 +39,11 @@ public class ThreadTimer extends Thread{
         while(Request == true)
         {
             try {
-                  form.RefreshActiveFriendsList();
-                  form.RefreshFriendsRequestList();
+                  form.RefreshOnlineFriends();
+                  form.RefreshFriendRequests();
                   form.RefreshPosts();
-                  form.RefreshMySongs();
-                  form.RefreshAllFriendsList();
+                  form.RefreshSongs();
+                  form.RefreshFriends();
                   Thread.sleep(2000);
             } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                   Logger.getLogger(ThreadTimer.class.getName()).log(Level.SEVERE, null, ex);

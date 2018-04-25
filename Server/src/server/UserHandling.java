@@ -130,7 +130,7 @@ public class UserHandling {
     }
 
     //Checks the text files to see if a username has been taken (validation check)
-    public boolean DoesUsernameExist(String username) {
+    public boolean CheckUsername(String username) {
         GUI.AddToLog("User Handling : DoesUsernameExist called.");
         //Simple search
         boolean Exists = false;

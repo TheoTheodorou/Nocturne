@@ -297,36 +297,36 @@ public class FindUser extends javax.swing.JFrame {
                 Users.add(txt_manualSearch.getText());
             }
             
-                Users.add(list_allUsers.getSelectedValue());
+            Users.add(list_allUsers.getSelectedValue());
             
-            FriendRequest.SetSingleData(Username);
+            FriendRequest.SetStringData(Username);
             FriendRequest.SetArray(Users);
 
-            Socket MainServer = new Socket("localhost", 9090);
+            Socket Server = new Socket("localhost", 9090);
 
-            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             OutToServer.writeObject(FriendRequest);
 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
 
-            String State = ServerReply.GetData();
+            String Condition = ServerReply.GetData();
 
             OutToServer.close();
             FromServerStream.close();
 
-            if ("Exists".equals(State)) {
+            if ("Exists".equals(Condition)) {
                 JOptionPane.showMessageDialog(this,
                         "Request has been sent to user",
                         "Friend Request",
                         JOptionPane.PLAIN_MESSAGE);
-            } else if ("Doesnt".equals(State)) {
+            } else if ("Doesnt".equals(Condition)) {
                 JOptionPane.showMessageDialog(this,
                         "This username does not exist on Nocturne",
                         "Friend Request",
                         JOptionPane.PLAIN_MESSAGE);
-            } else if ("AlreadyFriends".equals(State)) {
+            } else if ("AlreadyFriends".equals(Condition)) {
                 JOptionPane.showMessageDialog(this,
                         "You are already friends with this user, or they have sent you a friend request",
                         "Friend Request",

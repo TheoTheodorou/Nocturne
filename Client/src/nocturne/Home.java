@@ -46,7 +46,6 @@ import java.io.InputStream;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
 import java.util.concurrent.TimeUnit;
-
 import javazoom.jl.decoder.JavaLayerException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,8 +58,8 @@ import javax.swing.Timer;
 public class Home extends javax.swing.JFrame {
 
     private String username;
-    boolean musicPlaying = false;
-    String previousSongChoice = "";
+    boolean isMusicPlaying = false;
+    String previousSong = "";
     AudioStream audioStream = null;
 
     Timer songTimer;
@@ -75,21 +74,18 @@ public class Home extends javax.swing.JFrame {
         initComponents();
 
         this.username = currentUsername;
-        RefreshAllFriendsList();
-        RefreshFriendsRequestList();
-        RefreshMySongs();
+        RefreshFriends();
+        RefreshFriendRequests();
+        RefreshSongs();
         RefreshPosts();
-        RefreshActiveFriendsList();
-        
+        RefreshOnlineFriends();
+        //Thread timer to refresh everything
         Timer1.SetForm(this);
         Timer1.SetRequest(true);
         Thread t1 = new Thread(Timer1);
         t1.start(); 
-        //Thread timer to refresh Posts and All Friends every 60 seconds
-        
         CardLayout card = (CardLayout) pnl_main.getLayout();
         card.show(pnl_main, "cardHome");
-
     }
 
     /**
@@ -1101,13 +1097,13 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_musicUploadActionPerformed
 
     private void btn_homePostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_homePostActionPerformed
-        String PostMessage = txt_homePost.getText();
-        String UserMood = cbx_homeMood.getSelectedItem().toString();
+        String Post = txt_homePost.getText();
+        String Mood = cbx_homeMood.getSelectedItem().toString();
         ArrayList<String> PostDetails = new ArrayList();
         PostDetails.add(username);
         PostDetails.add("TextPost");
-        PostDetails.add(PostMessage);
-        PostDetails.add(UserMood);
+        PostDetails.add(Post);
+        PostDetails.add(Mood);
 
         Datapacket NewPost = new Datapacket();
 
@@ -1115,10 +1111,10 @@ public class Home extends javax.swing.JFrame {
         NewPost.SetArray(PostDetails);
 
         try {
-            Socket MainServer = new Socket("localhost", 9090);
+            Socket Server = new Socket("localhost", 9090);
 
-            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             OutToServer.writeObject(NewPost);
 
@@ -1143,17 +1139,17 @@ public class Home extends javax.swing.JFrame {
             songChoice = list_musicFriendSL.getSelectedValue();
         }
         //If song not same as previous song or empty choice 
-        if (!(songChoice.equals(previousSongChoice)) && (songChoice != "")) {
+        if (!(songChoice.equals(previousSong)) && (songChoice != "")) {
 
             //if music already playing
-            if (musicPlaying == true) {
+            if (isMusicPlaying == true) {
                 AudioPlayer.player.stop(audioStream);
             }
             downloadSong(songChoice);
             convertFile(songChoice);
             playSong();
-            previousSongChoice = songChoice;
-            musicPlaying = true;
+            previousSong = songChoice;
+            isMusicPlaying = true;
 
             // Sets cover photo and song name
             lbl_songNowPlaying.setText(songChoice);
@@ -1186,16 +1182,16 @@ public class Home extends javax.swing.JFrame {
             songTimer.start();
 
         } else {
-            if (musicPlaying == true) {
+            if (isMusicPlaying == true) {
                 // Pause
                 AudioPlayer.player.stop(audioStream);
                 songTimer.stop();
-                musicPlaying = false;
+                isMusicPlaying = false;
             } else {
                 // Play
                 AudioPlayer.player.start(audioStream);
                 songTimer.start();
-                musicPlaying = true;
+                isMusicPlaying = true;
             }
         }
     }//GEN-LAST:event_btn_musicPPActionPerformed
@@ -1237,8 +1233,8 @@ public class Home extends javax.swing.JFrame {
 
             OutToServer.close();
             FromServerStream.close();
-            RefreshAllFriendsList();
-            RefreshFriendsRequestList();
+            RefreshFriends();
+            RefreshFriendRequests();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
@@ -1265,8 +1261,8 @@ public class Home extends javax.swing.JFrame {
 
             OutToServer.close();
             FromServerStream.close();
-            RefreshAllFriendsList();
-            RefreshFriendsRequestList();
+            RefreshFriends();
+            RefreshFriendRequests();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
@@ -1294,7 +1290,7 @@ public class Home extends javax.swing.JFrame {
             OutToServer.close();
             FromServerStream.close();
 
-            RefreshAllFriendsList();
+            RefreshFriends();
 
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
@@ -1306,13 +1302,13 @@ public class Home extends javax.swing.JFrame {
         String UsernameToFind = list_friendsAll.getSelectedValue();
         Datapacket FindUserDetails = new Datapacket();
         FindUserDetails.SetCommand("GET_USER_DETAILS");
-        FindUserDetails.SetSingleData(UsernameToFind);
+        FindUserDetails.SetStringData(UsernameToFind);
 
         try {
-            Socket MainServer = new Socket("localhost", 9090);
+            Socket Server = new Socket("localhost", 9090);
 
-            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             OutToServer.writeObject(FindUserDetails);
 
@@ -1437,16 +1433,16 @@ public class Home extends javax.swing.JFrame {
         cbx_homeMood.setSelectedIndex(0);
     }
 
-    public void RefreshAllFriendsList() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+    public void RefreshFriends() throws IOException, ClassNotFoundException {
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
         UserFriends.SetCommand("GET_FRIENDS");
-        UserFriends.SetSingleData(username);
+        UserFriends.SetStringData(username);
 
         OutToServer.writeObject(UserFriends);
 
@@ -1466,16 +1462,16 @@ public class Home extends javax.swing.JFrame {
         list_friendsAll.setModel(AllFriends);
     }
 
-    public void RefreshActiveFriendsList() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+    public void RefreshOnlineFriends() throws IOException, ClassNotFoundException {
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
         UserFriends.SetCommand("GET_ACTIVE_FRIENDS");
-        UserFriends.SetSingleData(username);
+        UserFriends.SetStringData(username);
 
         OutToServer.writeObject(UserFriends);
 
@@ -1495,16 +1491,16 @@ public class Home extends javax.swing.JFrame {
         list_friendsActive.setModel(MyActiveFriends);
     }
 
-    public void RefreshFriendsRequestList() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+    public void RefreshFriendRequests() throws IOException, ClassNotFoundException {
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
         UserFriends.SetCommand("GET_FRIEND_REQUESTS");
-        UserFriends.SetSingleData(username);
+        UserFriends.SetStringData(username);
 
         OutToServer.writeObject(UserFriends);
 
@@ -1524,16 +1520,16 @@ public class Home extends javax.swing.JFrame {
         list_friendsRequests.setModel(AllFriendRequests);
     }
 
-    public void RefreshMySongs() throws IOException, ClassNotFoundException {
-        Socket MainServer = new Socket("localhost", 9090);
+    public void RefreshSongs() throws IOException, ClassNotFoundException {
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket UserFriends = new Datapacket();
         //GET MY FRIENDS
         UserFriends.SetCommand("GET_MY_SONGS");
-        UserFriends.SetSingleData(username);
+        UserFriends.SetStringData(username);
 
         OutToServer.writeObject(UserFriends);
 
@@ -1555,16 +1551,16 @@ public class Home extends javax.swing.JFrame {
 
     public void RefreshPosts() throws IOException, ClassNotFoundException {
 
-        Socket MainServer = new Socket("localhost", 9090);
+        Socket Server = new Socket("localhost", 9090);
 
-        ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
-        ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+        ObjectOutputStream OutToServer = new ObjectOutputStream(Server.getOutputStream());
+        ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
         Datapacket GetFriendsPosts = new Datapacket();
         //GET MY FRIENDS
 
         GetFriendsPosts.SetCommand("GET_POSTS");
-        GetFriendsPosts.SetSingleData(username);
+        GetFriendsPosts.SetStringData(username);
 
         OutToServer.writeObject(GetFriendsPosts);
 
@@ -1575,16 +1571,6 @@ public class Home extends javax.swing.JFrame {
         ta_homePosts.setText("");
 
         for (int i = 0; i < FriendsPosts.size(); i++) {
-//            String PostFormat = "";
-//            if ("TextPost".equals(FriendsPosts.get(i).get(4))) {
-//                if ("Select Mood:".equals(FriendsPosts.get(i).get(3))) {
-//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + "\n";
-//                } else {
-//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + " - Feeling " + FriendsPosts.get(i).get(3) + "\n";
-//                }
-//            } else if ("SongUpload".equals(FriendsPosts.get(i).get(4))) {
-//                PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + " uploaded a new song: " + FriendsPosts.get(i).get(2) + "\n";
-//            }
             ta_homePosts.append(FriendsPosts.get(i));
             ta_homePosts.setCaretPosition(ta_homePosts.getDocument().getLength());
         }
@@ -1594,7 +1580,7 @@ public class Home extends javax.swing.JFrame {
 
     public void Logout() {
         // Stops playing music on logout
-        if (musicPlaying == true) {
+        if (isMusicPlaying == true) {
             AudioPlayer.player.stop(audioStream);
             songTimer.stop();
         }
@@ -1605,7 +1591,7 @@ public class Home extends javax.swing.JFrame {
         Datapacket LoggingOff = new Datapacket();
 
         LoggingOff.SetCommand("LOGOUT");
-        LoggingOff.SetSingleData(username);
+        LoggingOff.SetStringData(username);
 
         File Pdir = new File("media/photos");
         File Mdir = new File("media/music");
@@ -1624,17 +1610,17 @@ public class Home extends javax.swing.JFrame {
                 }
             }
 
-            Socket MainServer = new Socket("localhost", 9090);
-            ObjectOutputStream ToServerStream = new ObjectOutputStream(MainServer.getOutputStream());
+            Socket Server = new Socket("localhost", 9090);
+            ObjectOutputStream ToServerStream = new ObjectOutputStream(Server.getOutputStream());
             System.out.println("Made Output Stream");
             ToServerStream.writeObject(LoggingOff);
 
-            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             //Get reply 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
 
-            MainServer.close();
+            Server.close();
 
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
@@ -1677,7 +1663,7 @@ public class Home extends javax.swing.JFrame {
     public void downloadSong(String FileName) {
         Datapacket SelectedSong = new Datapacket();
         SelectedSong.SetCommand("DOWNLOAD_SONG");
-        SelectedSong.SetSingleData(FileName);
+        SelectedSong.SetStringData(FileName);
 
         try {
             Socket MainServer = new Socket("localhost", 9090);
