@@ -28,7 +28,7 @@ public class UserHandling {
 
     //Adds all the user information to file
     public void createUser(ArrayList userInfo) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-
+        GUI.AddToLog("User Handling : createUser called.");
         // Assign the user details from the given array
         String registerUsername = userInfo.get(0).toString();
         String registerPassword = userInfo.get(1).toString();
@@ -77,10 +77,12 @@ public class UserHandling {
             writer.println(str);
         }
         writer.close();
+        
     }
 
     //Adds every detail regarding users songs to file
     public void addSong(ArrayList<String> songInformation) throws IOException {
+        GUI.AddToLog("User Handling : addSong called.");
         // Assign the song details from the given array
         String username = songInformation.get(0);
         String artistName = songInformation.get(2);
@@ -93,11 +95,13 @@ public class UserHandling {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(musicFile, true)));
         writer.println(username + "," + artistName + "," + songName + "," + genre);
         writer.close();
+       
 
     }
 
     //Adds every post made to file
     public void addPost(ArrayList<String> postInformation) throws IOException {
+        GUI.AddToLog("User Handling : addPost called.");
         // Assign the post details from the given array
         String username = postInformation.get(0);
         String postType = postInformation.get(1);
@@ -123,10 +127,12 @@ public class UserHandling {
             writer.println(username + "," + postType + "," + message);
             writer.close();
         }
+      
     }
 
     //Checks the text files to see if a username has been taken (validation check)
     public boolean DoesUsernameExist(String username) {
+        GUI.AddToLog("User Handling : DoesUsernameExist called.");
         //Simple search
         boolean Exists = false;
         File userFile = new File("users/" + username);
@@ -135,11 +141,13 @@ public class UserHandling {
         } else {
             Exists = false;
         }
+        
         return Exists;
     }
 
     //Checks to see if two users are already friends (validation check)
     public boolean AlreadyFriends(ArrayList<String> users) throws IOException {
+        GUI.AddToLog("User Handling : AlreadyFriends called. AlreadyFriends returns : " + AlreadyFriends );
         boolean AlreadyFriends = false;
         //User[0] to retrieve friends for
         //if User[1] is in the ArrayList then they are already friends
@@ -158,12 +166,13 @@ public class UserHandling {
                 AlreadyFriends = true;
             }
         }
-
+        
         return AlreadyFriends;
     }
 
     //Reads in from file all of the users friends
     public ArrayList<String> GetUsersFriends(String username) throws FileNotFoundException, IOException {
+        GUI.AddToLog("User Handling : GetUsersFriends called.");
         //If there isnt a file, create one
         File friendFile = new File("users/" + username + "/friends.txt");
         //createnewfile() function is a boolean so if its set to true then it will just carry on.
@@ -179,11 +188,13 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> returnList = new ArrayList(friendList);
+         
         return returnList;
     }
 
     //Reads in from file all of the users friend requests
     public ArrayList<String> GetUsersFriendRequests(String username) throws FileNotFoundException, IOException {
+        GUI.AddToLog("User Handling : GetUsersFriendsRequests called.");
         //If there isnt a file, create one
         File newUserFile = new File("users/" + username + "/friendRequests.txt");
         newUserFile.createNewFile();
@@ -198,12 +209,13 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> FriendsList = new ArrayList(friendList);
+       
         return FriendsList;
     }
 
     //Creates a new friend request between to users and stores the information to file
     public void NewFriendRequest(ArrayList<String> Users) throws FileNotFoundException, IOException {
-
+        GUI.AddToLog("User Handling : NewFriendRequest called.");
         String firstUser = Users.get(0);
         String secondUser = Users.get(1);
 
@@ -220,11 +232,12 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
+      
     }
 
     //Retrieves the users song information from file and returns a list
     public ArrayList<String> GetUserSongs(String username) throws FileNotFoundException, IOException {
-
+        GUI.AddToLog("User Handling : GetUsersSongs called.");
         File newUserFile = new File("users/" + username + "/songs.txt");
         newUserFile.createNewFile();
 
@@ -238,12 +251,13 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(songList);
+        
         return returnList;
     }
 
     //If a user accepts a friend request then the friendship between two user is updated (stored in text file)
     public void AcceptFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
-
+        GUI.AddToLog("User Handling : AcceptFriendRequest called.");
         String firstUser = users.get(0);
         String secondUser = users.get(1);
 
@@ -260,10 +274,12 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
+        
     }
 
     //If a user declines a friend request then the friend request is removed from file for both users. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void DeclineFriendRequest(ArrayList<String> users) throws FileNotFoundException, IOException {
+        GUI.AddToLog("User Handling : DeclineFriendRequest called.");
         //WILL NOT WORK PROPERLY NEEDS FIXING
         //Get all the information from file, create a temporary array to store the information
         //Remove the item from said array, print the new array back into the file.
@@ -311,10 +327,12 @@ public class UserHandling {
             secondWriter.println(secondFriendList.get(i));
         }
         secondWriter.close();
+       
     }
 
     //If a user removes a friend then the friend file is read, changed and updated accordingly. *WILL NOT WORK PROPERLY NEEDS FIXING*
     public void RemoveFriend(ArrayList<String> users) throws FileNotFoundException, IOException {
+        GUI.AddToLog("User Handling : RemoveFriend called.");
         //Get all the information from file, create a temporary array to store the information
         //Remove the item from said array, print the new array back into the file.
         String firstUser = users.get(0);
@@ -360,11 +378,12 @@ public class UserHandling {
             secondWriter.println(secondFriendList.get(i));
         }
         secondWriter.close();
+        
     }
 
     //Retreives all the users who have the same music preferences
     public ArrayList<String> GetUsernamesOnPreferences(String musicPref) throws IOException {
-
+        GUI.AddToLog("User Handling : GetUsernamesOnPreferences called.");
         File preferenceFile = new File("users/preferences/" + musicPref + ".txt");
         preferenceFile.createNewFile();
         String username;
@@ -379,12 +398,14 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(preferenceList);
+        
         return returnList;
+        
     }
 
     //Retreives all a users friends posts.
     public ArrayList<String> GetFriendsPosts(ArrayList<String> friends) throws IOException {
-
+        GUI.AddToLog("User Handling : GetFriendsPosts called.");
         String username = "";
         new File("media/posts").mkdirs();
         File postsFile = new File("media/posts/posts.txt");
@@ -405,10 +426,12 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(postsList);
+        
         return returnList;
     }
 
     public ArrayList<String> GetUsersDetails(String username) throws FileNotFoundException, IOException {
+        GUI.AddToLog("User Handling : GetUsersDetails called.");
         //If there isnt a file, create one
         File friendFile = new File("users/" + username + username + ".txt");
         //createnewfile() function is a boolean so if its set to true then it will just carry on.
@@ -424,6 +447,7 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> returnList = new ArrayList(detailsList);
+        
         return returnList;
     }
 
