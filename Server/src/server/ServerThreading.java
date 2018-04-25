@@ -66,6 +66,7 @@ public class ServerThreading implements Runnable {
                     //User Log in 
                     case "LOGIN":
                         //Retreieves the username and password from the client
+                        
                         String inputUserName = InFromClient.GetArray().get(0);
                         String userPassWord = InFromClient.GetArray().get(1);
 
@@ -304,30 +305,30 @@ public class ServerThreading implements Runnable {
                     //NEEDS FIXING
                     case "GET_USER_DETAILS": {
                         //retrieves the users data from the client 
-                        String Username = InFromClient.GetData();
-                        Datapacket UserInformation = new Datapacket();
-                        //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
-                        ArrayList<String> UsersDetails = db.GetUsersDetails(Username);
-                        ArrayList<String> UserSongs = db.GetUserSongFileName(Username);
-                        //creates a multi dimensional array
-                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
-                        //stores the user details
-                        UsersInfo.add(UsersDetails);
-                        //stores the users songs
-                        UsersInfo.add(UserSongs);
-                        UserInformation.SetCommand("GET_USER_DETAILS");
-                        UserInformation.SetMultipleArray(UsersInfo);
-                        //retrieves the users photo from file
-                        File PhotoDirectory = new File("res/Photos/" + Username + ".png");
-                        FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
-                        byte[] buffer = new byte[UserPicture.available()];
-                        UserPicture.read(buffer);
-                        UserInformation.SetFirstByte(buffer);
-                        //sends the datapacket to the client
-                        ToClientStream.writeObject(UserInformation);
-                        //logs which user is recieving the information
-                        GUI.AddToLog("Sending " + Username + " details and songs to " + ip);
-                        break;
+//                        String Username = InFromClient.GetData();
+//                        Datapacket UserInformation = new Datapacket();
+//                        //NEEDS FIXING HERE * NEED TO RETREIVE FROM FILE
+//                        ArrayList<String> UsersDetails = GetUsersDetails(Username);
+//                        ArrayList<String> UserSongs = GetUserSongFileName(Username);
+//                        //creates a multi dimensional array
+//                        ArrayList<ArrayList<String>> UsersInfo = new ArrayList();
+//                        //stores the user details
+//                        UsersInfo.add(UsersDetails);
+//                        //stores the users songs
+//                        UsersInfo.add(UserSongs);
+//                        UserInformation.SetCommand("GET_USER_DETAILS");
+//                        UserInformation.SetMultipleArray(UsersInfo);
+//                        //retrieves the users photo from file
+//                        File PhotoDirectory = new File("res/Photos/" + Username + ".png");
+//                        FileInputStream UserPicture = new FileInputStream(PhotoDirectory);
+//                        byte[] buffer = new byte[UserPicture.available()];
+//                        UserPicture.read(buffer);
+//                        UserInformation.SetFirstByte(buffer);
+//                        //sends the datapacket to the client
+//                        ToClientStream.writeObject(UserInformation);
+//                        //logs which user is recieving the information
+//                        GUI.AddToLog("Sending " + Username + " details and songs to " + ip);
+//                        break;
                     }
                     //Get Friends Posts
                     case "GET_POSTS": {
@@ -337,6 +338,7 @@ public class ServerThreading implements Runnable {
                         //Add own username to retrieve own posts
                         Friends.add(InFromClient.GetData());
                         ArrayList<String> UserPosts = user.GetFriendsPosts(Friends);
+                        GUI.AddToLog(Friends.get(0));
                         Datapacket FriendsPosts = new Datapacket();
                         FriendsPosts.SetCommand("GET_POSTS");
                         FriendsPosts.SetArray(UserPosts);
