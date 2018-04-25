@@ -77,7 +77,7 @@ public class UserHandling {
             writer.println(str);
         }
         writer.close();
-        
+
     }
 
     //Adds every detail regarding users songs to file
@@ -95,7 +95,6 @@ public class UserHandling {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(musicFile, true)));
         writer.println(username + "," + artistName + "," + songName + "," + genre);
         writer.close();
-       
 
     }
 
@@ -127,7 +126,7 @@ public class UserHandling {
             writer.println(username + "," + postType + "," + message);
             writer.close();
         }
-      
+
     }
 
     //Checks the text files to see if a username has been taken (validation check)
@@ -141,15 +140,15 @@ public class UserHandling {
         } else {
             Exists = false;
         }
-        
+
         return Exists;
     }
 
     //Checks to see if two users are already friends (validation check)
     public boolean AlreadyFriends(ArrayList<String> users) throws IOException {
-        
+
         boolean AlreadyFriends = false;
-        GUI.AddToLog("User Handling : AlreadyFriends called." );
+        GUI.AddToLog("User Handling : AlreadyFriends called.");
         //User[0] to retrieve friends for
         //if User[1] is in the ArrayList then they are already friends
         ArrayList<String> AllFriends = GetUsersFriends(users.get(0));
@@ -167,7 +166,7 @@ public class UserHandling {
                 AlreadyFriends = true;
             }
         }
-        
+
         return AlreadyFriends;
     }
 
@@ -189,7 +188,7 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> returnList = new ArrayList(friendList);
-         
+
         return returnList;
     }
 
@@ -210,7 +209,7 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> FriendsList = new ArrayList(friendList);
-       
+
         return FriendsList;
     }
 
@@ -233,16 +232,16 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
-      
+
     }
 
     //Retrieves the users song information from file and returns a list
     public ArrayList<String> GetUserSongs(String username) throws FileNotFoundException, IOException {
         GUI.AddToLog("User Handling : GetUsersSongs called.");
-        File newUserFile = new File("users/" + username + "/songs.txt");
+        File newUserFile = new File("users/" + username + "/" + username + "songs.txt");
         newUserFile.createNewFile();
 
-        BufferedReader reader = new BufferedReader(new FileReader("users/" + username + username + "/songs.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader(newUserFile));
         String line;
         List<String> songList = new ArrayList<String>();
 
@@ -252,7 +251,7 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(songList);
-        
+
         return returnList;
     }
 
@@ -275,7 +274,7 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
-        
+
     }
 
     //If a user declines a friend request then the friend request is removed from file for both users. *WILL NOT WORK PROPERLY NEEDS FIXING*
@@ -287,8 +286,8 @@ public class UserHandling {
         String firstUser = users.get(0);
         String secondUser = users.get(1);
 
-        File firstUserFile = new File("users/" + firstUser + "/friendRequest.txt");
-        File secondUserFile = new File("users/" + secondUser + "/friendRequest.txt");
+        File firstUserFile = new File("users/" + firstUser + "/friendRequests.txt");
+        File secondUserFile = new File("users/" + secondUser + "/friendRequests.txt");
         firstUserFile.createNewFile();
         secondUserFile.createNewFile();
 
@@ -316,8 +315,13 @@ public class UserHandling {
         firstFriendList.remove(secondUser);
         secondFriendList.remove(firstUser);
 
-        PrintWriter firstWriter = new PrintWriter(new BufferedWriter(new FileWriter(firstUserFile, true)));
-        PrintWriter secondWriter = new PrintWriter(new BufferedWriter(new FileWriter(secondUserFile, true)));
+        File firstUserFiletmp = new File("users/" + firstUser + "/friendRequeststmp.txt");
+        File secondUserFiletmp = new File("users/" + secondUser + "/friendRequeststmp.txt");
+        firstUserFiletmp.createNewFile();
+        secondUserFiletmp.createNewFile();
+
+        PrintWriter firstWriter = new PrintWriter(new BufferedWriter(new FileWriter(firstUserFiletmp, true)));
+        PrintWriter secondWriter = new PrintWriter(new BufferedWriter(new FileWriter(secondUserFiletmp, true)));
 
         for (int i = 0; i < firstFriendList.size() - 1; i++) {
             firstWriter.println(firstFriendList.get(i));
@@ -328,7 +332,13 @@ public class UserHandling {
             secondWriter.println(secondFriendList.get(i));
         }
         secondWriter.close();
-       
+
+        firstUserFile.delete();
+        secondUserFile.delete();
+
+        firstUserFiletmp.renameTo(firstUserFile);
+        secondUserFiletmp.renameTo(secondUserFile);
+
     }
 
     //If a user removes a friend then the friend file is read, changed and updated accordingly. *WILL NOT WORK PROPERLY NEEDS FIXING*
@@ -367,8 +377,13 @@ public class UserHandling {
         firstFriendList.remove(secondUser);
         secondFriendList.remove(firstUser);
 
-        PrintWriter firstWriter = new PrintWriter(new BufferedWriter(new FileWriter(firstUserFile, true)));
-        PrintWriter secondWriter = new PrintWriter(new BufferedWriter(new FileWriter(secondUserFile, true)));
+        File firstUserFiletmp = new File("users/" + firstUser + "/friendRequeststmp.txt");
+        File secondUserFiletmp = new File("users/" + secondUser + "/friendRequeststmp.txt");
+        firstUserFiletmp.createNewFile();
+        secondUserFiletmp.createNewFile();
+
+        PrintWriter firstWriter = new PrintWriter(new BufferedWriter(new FileWriter(firstUserFiletmp, true)));
+        PrintWriter secondWriter = new PrintWriter(new BufferedWriter(new FileWriter(secondUserFiletmp, true)));
 
         for (int i = 0; i < firstFriendList.size() - 1; i++) {
             firstWriter.println(firstFriendList.get(i));
@@ -379,7 +394,12 @@ public class UserHandling {
             secondWriter.println(secondFriendList.get(i));
         }
         secondWriter.close();
-        
+
+        firstUserFile.delete();
+        secondUserFile.delete();
+
+        firstUserFiletmp.renameTo(firstUserFile);
+        secondUserFiletmp.renameTo(secondUserFile);
     }
 
     //Retreives all the users who have the same music preferences
@@ -399,9 +419,9 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(preferenceList);
-        
+
         return returnList;
-        
+
     }
 
     //Retreives all a users friends posts.
@@ -427,7 +447,7 @@ public class UserHandling {
         }
 
         ArrayList<String> returnList = new ArrayList(postsList);
-        
+
         return returnList;
     }
 
@@ -448,7 +468,7 @@ public class UserHandling {
         reader.close();
 
         ArrayList<String> returnList = new ArrayList(detailsList);
-        
+
         return returnList;
     }
 
