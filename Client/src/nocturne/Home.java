@@ -271,6 +271,7 @@ public class Home extends javax.swing.JFrame {
         ta_homePosts.setBackground(new java.awt.Color(7, 51, 73));
         ta_homePosts.setColumns(20);
         ta_homePosts.setFont(new java.awt.Font("Futura", 0, 14)); // NOI18N
+        ta_homePosts.setForeground(new java.awt.Color(255, 255, 255));
         ta_homePosts.setLineWrap(true);
         ta_homePosts.setRows(5);
         ta_homePosts.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
