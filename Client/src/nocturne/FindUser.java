@@ -294,11 +294,11 @@ public class FindUser extends javax.swing.JFrame {
             ArrayList<String> Users = new ArrayList();
             Users.add(Username);
             if(list_allUsers.isSelectionEmpty()){
-                Users.add(txt_manualSearch.getSelectedText());
+                Users.add(txt_manualSearch.getText());
             }
-            else{
+            
                 Users.add(list_allUsers.getSelectedValue());
-            }
+            
             FriendRequest.SetSingleData(Username);
             FriendRequest.SetArray(Users);
 
@@ -323,7 +323,7 @@ public class FindUser extends javax.swing.JFrame {
                         JOptionPane.PLAIN_MESSAGE);
             } else if ("Doesnt".equals(State)) {
                 JOptionPane.showMessageDialog(this,
-                        "Declined, this username does not exist on Hitify",
+                        "This username does not exist on Nocturne",
                         "Friend Request",
                         JOptionPane.PLAIN_MESSAGE);
             } else if ("AlreadyFriends".equals(State)) {

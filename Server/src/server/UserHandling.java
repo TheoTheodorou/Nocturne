@@ -233,6 +233,8 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
+        
+        GUI.AddToLog(firstUser);
 
     }
 
