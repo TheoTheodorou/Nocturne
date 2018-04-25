@@ -212,10 +212,12 @@ public class ServerThreading implements Runnable {
                         //retrieves the users from the client
                         ArrayList<String> Users = InFromClient.GetArray();
                         //checks to see if a user exists
-                        boolean UsernameExists = user.DoesUsernameExist(Users.get(1).toString());
+                        GUI.AddToLog(Users.get(1));
+                        boolean UsernameExists = user.DoesUsernameExist(Users.get(1));
                         ToClient.SetCommand("NEW_FRIEND_REQUEST");
                         if (UsernameExists == true) {
                             //if the user exists...
+
                             boolean AlreadyFriends = user.AlreadyFriends(Users);
                             if (AlreadyFriends == false) {
                                 //...and theyre not already friends
