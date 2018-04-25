@@ -38,14 +38,14 @@ public class FindUser extends javax.swing.JFrame {
         pnl_left = new javax.swing.JPanel();
         cbx_filterGenre = new javax.swing.JComboBox<>();
         lbl_users = new javax.swing.JLabel();
-        sp_users = new javax.swing.JScrollPane();
-        ta_users = new javax.swing.JTextArea();
         seperator1 = new javax.swing.JSeparator();
         btn_filterGenre = new javax.swing.JButton();
         lbl_filterGenre = new javax.swing.JLabel();
-        txt_homePost = new javax.swing.JTextField();
+        txt_manualSearch = new javax.swing.JTextField();
         lbl_users1 = new javax.swing.JLabel();
         seperator2 = new javax.swing.JSeparator();
+        sp_friendsAll = new javax.swing.JScrollPane();
+        list_allUsers = new javax.swing.JList<>();
         pnl_Right = new javax.swing.JPanel();
         btn_sendRequest = new javax.swing.JButton();
         lbl_icon = new javax.swing.JLabel();
@@ -73,12 +73,6 @@ public class FindUser extends javax.swing.JFrame {
         lbl_users.setForeground(new java.awt.Color(57, 113, 177));
         lbl_users.setText("Or Search Manually:");
 
-        ta_users.setBackground(new java.awt.Color(7, 51, 73));
-        ta_users.setColumns(20);
-        ta_users.setForeground(new java.awt.Color(255, 255, 255));
-        ta_users.setRows(5);
-        sp_users.setViewportView(ta_users);
-
         btn_filterGenre.setBackground(new java.awt.Color(57, 113, 177));
         btn_filterGenre.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         btn_filterGenre.setForeground(new java.awt.Color(255, 255, 255));
@@ -94,15 +88,27 @@ public class FindUser extends javax.swing.JFrame {
         lbl_filterGenre.setForeground(new java.awt.Color(57, 113, 177));
         lbl_filterGenre.setText("Filter:");
 
-        txt_homePost.setBackground(new java.awt.Color(7, 51, 73));
-        txt_homePost.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-        txt_homePost.setForeground(new java.awt.Color(255, 255, 255));
-        txt_homePost.setBorder(null);
-        txt_homePost.setCaretColor(new java.awt.Color(255, 255, 255));
+        txt_manualSearch.setBackground(new java.awt.Color(7, 51, 73));
+        txt_manualSearch.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        txt_manualSearch.setForeground(new java.awt.Color(255, 255, 255));
+        txt_manualSearch.setBorder(null);
+        txt_manualSearch.setCaretColor(new java.awt.Color(255, 255, 255));
+        txt_manualSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txt_manualSearchFocusGained(evt);
+            }
+        });
 
         lbl_users1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         lbl_users1.setForeground(new java.awt.Color(57, 113, 177));
         lbl_users1.setText("All Users:");
+
+        sp_friendsAll.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        list_allUsers.setBackground(new java.awt.Color(7, 51, 73));
+        list_allUsers.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        list_allUsers.setForeground(new java.awt.Color(255, 255, 255));
+        sp_friendsAll.setViewportView(list_allUsers);
 
         javax.swing.GroupLayout pnl_leftLayout = new javax.swing.GroupLayout(pnl_left);
         pnl_left.setLayout(pnl_leftLayout);
@@ -111,20 +117,21 @@ public class FindUser extends javax.swing.JFrame {
             .addGroup(pnl_leftLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(sp_friendsAll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(seperator2)
                     .addGroup(pnl_leftLayout.createSequentialGroup()
-                        .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(seperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnl_leftLayout.createSequentialGroup()
-                                .addComponent(cbx_filterGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_filterGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(lbl_users, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sp_users, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbl_users1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_filterGenre, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnl_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(seperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnl_leftLayout.createSequentialGroup()
+                                    .addComponent(cbx_filterGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(btn_filterGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lbl_users1, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lbl_filterGenre, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(lbl_users))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txt_homePost))
+                    .addComponent(txt_manualSearch))
                 .addContainerGap())
         );
         pnl_leftLayout.setVerticalGroup(
@@ -141,14 +148,14 @@ public class FindUser extends javax.swing.JFrame {
                 .addGap(3, 3, 3)
                 .addComponent(lbl_users1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sp_users, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sp_friendsAll, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_users)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_homePost, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txt_manualSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
                 .addComponent(seperator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+                .addGap(162, 162, 162))
         );
 
         getContentPane().add(pnl_left, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 200, 280));
@@ -208,7 +215,7 @@ public class FindUser extends javax.swing.JFrame {
                 .addComponent(btn_sendRequest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lbl_cancel)
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnl_Right, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 30, 180, 280));
@@ -281,13 +288,17 @@ public class FindUser extends javax.swing.JFrame {
 
     private void btn_sendRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendRequestActionPerformed
         try {
-
             Datapacket FriendRequest = new Datapacket();
             //GET MY FRIENDS
             FriendRequest.SetCommand("NEW_FRIEND_REQUEST");
             ArrayList<String> Users = new ArrayList();
             Users.add(Username);
-            Users.add(ta_users.getSelectedText());
+            if(list_allUsers.isSelectionEmpty()){
+                Users.add(txt_manualSearch.getSelectedText());
+            }
+            else{
+                Users.add(list_allUsers.getSelectedValue());
+            }
             FriendRequest.SetSingleData(Username);
             FriendRequest.SetArray(Users);
 
@@ -307,7 +318,7 @@ public class FindUser extends javax.swing.JFrame {
 
             if ("Exists".equals(State)) {
                 JOptionPane.showMessageDialog(this,
-                        "Request has been sent to " + ta_users.getSelectedText(),
+                        "Request has been sent to user",
                         "Friend Request",
                         JOptionPane.PLAIN_MESSAGE);
             } else if ("Doesnt".equals(State)) {
@@ -335,6 +346,10 @@ public class FindUser extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_icon_exitMousePressed
 
+    private void txt_manualSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_manualSearchFocusGained
+        list_allUsers.clearSelection();
+    }//GEN-LAST:event_txt_manualSearchFocusGained
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_filterGenre;
     private javax.swing.JButton btn_sendRequest;
@@ -346,14 +361,14 @@ public class FindUser extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_title;
     private javax.swing.JLabel lbl_users;
     private javax.swing.JLabel lbl_users1;
+    private javax.swing.JList<String> list_allUsers;
     private javax.swing.JPanel pnl_Right;
     private javax.swing.JPanel pnl_left;
     private javax.swing.JPanel pnl_toolbar;
     private javax.swing.JSeparator seperator1;
     private javax.swing.JSeparator seperator2;
-    private javax.swing.JScrollPane sp_users;
-    private javax.swing.JTextArea ta_users;
-    private javax.swing.JTextField txt_homePost;
+    private javax.swing.JScrollPane sp_friendsAll;
+    private javax.swing.JTextField txt_manualSearch;
     // End of variables declaration//GEN-END:variables
 
 }
