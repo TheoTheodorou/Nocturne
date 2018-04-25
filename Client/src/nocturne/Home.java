@@ -67,6 +67,9 @@ public class Home extends javax.swing.JFrame {
     int songLength;
     int incrementProgress;
     int currentProgress;
+    
+    public ThreadTimer Timer1 = new ThreadTimer();
+  
 
     public Home(String currentUsername) throws IOException, ClassNotFoundException {
         initComponents();
@@ -77,7 +80,13 @@ public class Home extends javax.swing.JFrame {
         RefreshMySongs();
         RefreshPosts();
         RefreshActiveFriendsList();
-
+        
+        Timer1.SetForm(this);
+        Timer1.SetRequest(true);
+        Thread t1 = new Thread(Timer1);
+        t1.start(); 
+        //Thread timer to refresh Posts and All Friends every 60 seconds
+        
         CardLayout card = (CardLayout) pnl_main.getLayout();
         card.show(pnl_main, "cardHome");
 
