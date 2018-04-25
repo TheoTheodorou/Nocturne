@@ -89,7 +89,7 @@ public class UserHandling {
         String songName = songInformation.get(3);
         String genre = songInformation.get(4);
         //Creates a new file
-        File musicFile = new File("users/" + username + "songs.txt");
+        File musicFile = new File("users/" + username + "/songs.txt");
         musicFile.createNewFile();
         //Exports the information to the file
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(musicFile, true)));
