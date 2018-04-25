@@ -135,7 +135,8 @@ public class UserHandling {
         //Simple search
         boolean Exists = false;
         File userFile = new File("users/" + username);
-        if (userFile.exists() && userFile.isDirectory()) {
+        GUI.AddToLog(username);
+        if (userFile.isDirectory()) {
             Exists = true;
         } else {
             Exists = false;
@@ -154,7 +155,7 @@ public class UserHandling {
         ArrayList<String> AllFriends = GetUsersFriends(users.get(0));
         //checks their current friends 
         for (int i = 0; i < AllFriends.size(); i++) {
-            if (users.get(1).equals(AllFriends.get(i))) {
+            if (users.get(1).toString().equals(AllFriends.get(i).toString())) {
                 AlreadyFriends = true;
             }
         }
@@ -216,8 +217,8 @@ public class UserHandling {
     //Creates a new friend request between to users and stores the information to file
     public void NewFriendRequest(ArrayList<String> Users) throws FileNotFoundException, IOException {
         GUI.AddToLog("User Handling : NewFriendRequest called.");
-        String firstUser = Users.get(0);
-        String secondUser = Users.get(1);
+        String firstUser = Users.get(0).toString();
+        String secondUser = Users.get(1).toString();
 
         File firstUserFile = new File("users/" + firstUser + "/friendRequests.txt");
         File secondUserFile = new File("users/" + secondUser + "/friendRequests.txt");
