@@ -88,7 +88,7 @@ public class Send {
             logScrollPane.getVerticalScrollBar().setValue(logScrollPane.getVerticalScrollBar().getMaximum());
 
             // Runs thread which continuously updates message table
-            Thread th2 = new Thread(new Receive(inFromClient, chatFile, client, logTextArea, logScrollPane, chatName));
+            Thread th2 = new Thread((Runnable) new Receive(inFromClient, chatFile, client, logTextArea, logScrollPane, chatName));
             th2.start();
 
             while(th2.getState()!=Thread.State.TERMINATED){

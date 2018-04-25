@@ -241,7 +241,7 @@ public class UserHandling {
     //Retrieves the users song information from file and returns a list
     public ArrayList<String> GetUserSongs(String username) throws FileNotFoundException, IOException {
         GUI.AddToLog("User Handling : GetUsersSongs called.");
-        File newUserFile = new File("users/" + username + "/" + username + "songs.txt");
+        File newUserFile = new File("users/" + username + "/songs.txt");
         newUserFile.createNewFile();
 
         BufferedReader reader = new BufferedReader(new FileReader(newUserFile));
@@ -277,6 +277,8 @@ public class UserHandling {
 
         secondWriter.println(firstUser);
         secondWriter.close();
+        
+        this.DeclineFriendRequest(users);
 
     }
 
