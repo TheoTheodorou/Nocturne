@@ -277,17 +277,17 @@ public class Login extends javax.swing.JFrame {
 
         try {
 
-            Socket NocturneServer = new Socket("localhost", 9090);
+            Socket Server = new Socket("localhost", 9090);
 
             //Make Object Streams
-            ObjectOutputStream ToServerStream = new ObjectOutputStream(NocturneServer.getOutputStream());
+            ObjectOutputStream ToServerStream = new ObjectOutputStream(Server.getOutputStream());
             System.out.println("Made Output Stream");
 
             //Send the LoginAttempt infopacket
             ToServerStream.writeObject(loginAttempt);
 
             //Set up stream to recieve reply from server
-            ObjectInputStream FromServerStream = new ObjectInputStream(NocturneServer.getInputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(Server.getInputStream());
 
             //Get reply 
             loginReply = (Datapacket) FromServerStream.readObject();
@@ -310,7 +310,7 @@ public class Login extends javax.swing.JFrame {
 
             }
 
-            NocturneServer.close();
+            Server.close();
         } catch (IOException e) {
             System.err.println("Error - " + e.getMessage());
         } catch (ClassNotFoundException ex) {
