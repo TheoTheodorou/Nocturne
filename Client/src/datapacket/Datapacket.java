@@ -14,18 +14,20 @@ import java.util.ArrayList;
 
 //This contains requests and replies packaged with the data.
 public class Datapacket implements Serializable {
-
+    //This string is used to identify what process the data should go through.
     private String Command;
+    //This string is used to pass single quantities of data.
     private String SingleData;
+    //This string stores the username of the person who is sending/reciving the datapacket.
     private String UserName;
+    //This is a standard array.
     private ArrayList MultipleData;
-    private ArrayList<ArrayList<String>> MultipleArrayData;
+    //This is an array of bytes which is used to send data. For example a file.
     private byte[] FirstByteArray;
+    //This is the same as the first byte array, but this is used when you want to send another file in the same datapacket.
     private byte[] SecondByteArray;
     
-    
-    
-
+    //Get and Set the datapacket variables.
     public void SetCommand(String Command) {
         this.Command = Command;
     }
@@ -58,14 +60,6 @@ public class Datapacket implements Serializable {
         return MultipleData;
     }
 
-    public void SetMultipleArray(ArrayList<ArrayList<String>> MultipleArrayData) {
-        this.MultipleArrayData = MultipleArrayData;
-    }
-
-    public ArrayList<ArrayList<String>> GetMultipleArray() {
-        return MultipleArrayData;
-    }
-
     public void SetFirstByte(byte[] FirstByte) {
         this.FirstByteArray = FirstByte;
     }
@@ -81,15 +75,7 @@ public class Datapacket implements Serializable {
     public byte[] GetSecondData() {
         return SecondByteArray;
     }
-
-    
-
-
-    
-   
-    
-   
-    
-
 }
+
+
 
