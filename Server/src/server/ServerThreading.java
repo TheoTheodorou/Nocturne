@@ -66,6 +66,7 @@ public class ServerThreading implements Runnable {
                     //User Log in 
                     case "LOGIN":
                         //Retreieves the username and password from the client
+                        
                         String inputUserName = InFromClient.GetArray().get(0);
                         String userPassWord = InFromClient.GetArray().get(1);
 
@@ -337,6 +338,7 @@ public class ServerThreading implements Runnable {
                         //Add own username to retrieve own posts
                         Friends.add(InFromClient.GetData());
                         ArrayList<String> UserPosts = user.GetFriendsPosts(Friends);
+                        GUI.AddToLog(Friends.get(0));
                         Datapacket FriendsPosts = new Datapacket();
                         FriendsPosts.SetCommand("GET_POSTS");
                         FriendsPosts.SetArray(UserPosts);

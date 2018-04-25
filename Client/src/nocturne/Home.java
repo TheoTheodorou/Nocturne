@@ -5,11 +5,31 @@
  */
 package nocturne;
 
+import com.sun.xml.internal.ws.commons.xmlutil.Converter;
 import datapacket.Datapacket;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.Timer;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,9 +38,19 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.Timer;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.border.LineBorder;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
+import java.util.concurrent.TimeUnit;
+
+import javazoom.jl.decoder.JavaLayerException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 
 /**
  *
@@ -79,6 +109,7 @@ public class Home extends javax.swing.JFrame {
         lbl_homeClear = new javax.swing.JLabel();
         seperator1 = new javax.swing.JSeparator();
         seperator2 = new javax.swing.JSeparator();
+        icon_pp = new javax.swing.JLabel();
         pnl_homeSideBar = new javax.swing.JPanel();
         btn_homeFriends = new javax.swing.JButton();
         btn_homeHome = new javax.swing.JButton();
@@ -131,6 +162,9 @@ public class Home extends javax.swing.JFrame {
         sp_musicFriends = new javax.swing.JScrollPane();
         list_musicFriends = new javax.swing.JList<>();
         lbl_musicFriends = new javax.swing.JLabel();
+        lbl_nowPlaying = new javax.swing.JLabel();
+        lbl_songNowPlaying = new javax.swing.JLabel();
+        icon_nowPlaying = new javax.swing.JLabel();
         pnl_musicSideBar = new javax.swing.JPanel();
         btn_musicFriends = new javax.swing.JButton();
         btn_musicHome = new javax.swing.JButton();
@@ -258,32 +292,40 @@ public class Home extends javax.swing.JFrame {
             pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_homePanelLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl_homeSelectMood)
-                    .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(txt_homePost, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(pnl_homePanelLayout.createSequentialGroup()
-                                    .addComponent(lbl_homeNewsFeed)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btn_homePost, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(lbl_homeClear))
-                                .addComponent(seperator2)
-                                .addComponent(sp_homePosts)
-                                .addComponent(seperator1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
-                            .addComponent(lbl_homePost)
-                            .addComponent(cbx_homeMood, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txt_homePost)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(lbl_homePost)
+                        .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(pnl_homePanelLayout.createSequentialGroup()
+                                .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cbx_homeMood, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lbl_homeSelectMood))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(icon_pp, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnl_homePanelLayout.createSequentialGroup()
+                                .addComponent(lbl_homeNewsFeed)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btn_homePost, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbl_homeClear))
+                            .addComponent(seperator2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sp_homePosts, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(seperator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnl_homePanelLayout.setVerticalGroup(
             pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_homePanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(lbl_homeSelectMood)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbx_homeMood, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnl_homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnl_homePanelLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbl_homeSelectMood)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbx_homeMood, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnl_homePanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(icon_pp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(seperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -299,8 +341,8 @@ public class Home extends javax.swing.JFrame {
                         .addComponent(lbl_homeClear))
                     .addComponent(lbl_homeNewsFeed, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sp_homePosts, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addComponent(sp_homePosts, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
         );
 
         pnl_home.add(pnl_homePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 450, 370));
@@ -785,6 +827,16 @@ public class Home extends javax.swing.JFrame {
         lbl_musicFriends.setForeground(new java.awt.Color(57, 113, 177));
         lbl_musicFriends.setText("Friends:");
 
+        lbl_nowPlaying.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        lbl_nowPlaying.setForeground(new java.awt.Color(57, 113, 177));
+        lbl_nowPlaying.setText("Now Playing:");
+
+        lbl_songNowPlaying.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        lbl_songNowPlaying.setForeground(new java.awt.Color(57, 113, 177));
+
+        icon_nowPlaying.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        icon_nowPlaying.setForeground(new java.awt.Color(57, 113, 177));
+
         javax.swing.GroupLayout pnl_musicPanelLayout = new javax.swing.GroupLayout(pnl_musicPanel);
         pnl_musicPanel.setLayout(pnl_musicPanelLayout);
         pnl_musicPanelLayout.setHorizontalGroup(
@@ -797,7 +849,15 @@ public class Home extends javax.swing.JFrame {
                         .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(sp_musicYourMusic, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                             .addComponent(lbl_musicYourMusic)
-                            .addComponent(btn_musicPP, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                            .addComponent(btn_musicPP, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                            .addGroup(pnl_musicPanelLayout.createSequentialGroup()
+                                .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(pnl_musicPanelLayout.createSequentialGroup()
+                                        .addComponent(lbl_nowPlaying)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(lbl_songNowPlaying, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addComponent(icon_nowPlaying, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(25, 25, 25)
                         .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lbl_musicFriends)
@@ -815,14 +875,22 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(lbl_musicYourMusic)
                     .addComponent(lbl_musicFriends))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnl_musicPanelLayout.createSequentialGroup()
                         .addComponent(sp_musicFriends, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_musicFriendSL)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sp_musicFriendSL, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(sp_musicYourMusic, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnl_musicPanelLayout.createSequentialGroup()
+                        .addComponent(sp_musicYourMusic, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnl_musicPanelLayout.createSequentialGroup()
+                                .addComponent(lbl_nowPlaying)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbl_songNowPlaying, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(icon_nowPlaying, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_musicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_musicUpload, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1073,16 +1141,16 @@ public class Home extends javax.swing.JFrame {
             musicPlaying = true;
 
             // Sets cover photo and song name
-            songNamelbl.setText(songChoice);
-            lblCoverPhoto.setIcon(ResizeImage("./res/Photos/" + songChoice + ".png"));
+            lbl_songNowPlaying.setText(songChoice);
+            icon_nowPlaying.setIcon(ResizeImage("media/albums" + songChoice + ".png"));
 
             // Calculates length of song using the formula:
             // Runtime = FileLength / (Sample Rate * Channels * Bits per sample /8)
             songLength = (audioStream.getLength() / ((44100 * 2 * 16) / 8));
 
             // Resets progress bar and timer counter
-            songProgress.setValue(0);
-            songProgress.setMaximum(songLength);
+            pb_musicBar.setValue(0);
+            pb_musicBar.setMaximum(songLength);
             currentProgress = 0;
 
             // Creates timer which runs action every second
@@ -1097,7 +1165,7 @@ public class Home extends javax.swing.JFrame {
                         ((Timer) e.getSource()).stop();
                     }
                     // Value of progress bar updated
-                    songProgress.setValue(currentProgress);
+                    pb_musicBar.setValue(currentProgress);
                 }
             });
             songTimer.start();
@@ -1138,7 +1206,7 @@ public class Home extends javax.swing.JFrame {
         ArrayList<String> AcceptRequest = new ArrayList();
         AcceptRequest.add(username);
         AcceptRequest.add(SecondUser);
-        
+
         Datapacket AcceptFriendRequest = new Datapacket();
         AcceptFriendRequest.SetCommand("ACCEPT_FRIEND_REQUEST");
         AcceptFriendRequest.SetArray(AcceptRequest);
@@ -1148,8 +1216,6 @@ public class Home extends javax.swing.JFrame {
             ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
             ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
 
-
-
             OutToServer.writeObject(AcceptFriendRequest);
 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
@@ -1158,8 +1224,7 @@ public class Home extends javax.swing.JFrame {
             FromServerStream.close();
             RefreshAllFriendsList();
             RefreshFriendsRequestList();
-        } catch (IOException | ClassNotFoundException e)
-        {
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_btn_friendsAcceptActionPerformed
@@ -1169,7 +1234,7 @@ public class Home extends javax.swing.JFrame {
         ArrayList<String> DeclineRequest = new ArrayList();
         DeclineRequest.add(username);
         DeclineRequest.add(SecondUser);
-        
+
         Datapacket DeclineFriendRequest = new Datapacket();
         DeclineFriendRequest.SetCommand("DECLINE_FRIEND_REQUEST");
         DeclineFriendRequest.SetArray(DeclineRequest);
@@ -1179,8 +1244,6 @@ public class Home extends javax.swing.JFrame {
             ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
             ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
 
-
-
             OutToServer.writeObject(DeclineFriendRequest);
 
             Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
@@ -1189,8 +1252,7 @@ public class Home extends javax.swing.JFrame {
             FromServerStream.close();
             RefreshAllFriendsList();
             RefreshFriendsRequestList();
-        } catch (IOException | ClassNotFoundException e)
-        {
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_btn_friendsDeclineActionPerformed
@@ -1203,7 +1265,7 @@ public class Home extends javax.swing.JFrame {
         UsersToRemove.add(username);
         UsersToRemove.add(usernameToDelete);
         DeleteUser.SetArray(UsersToRemove);
-        
+
         try {
             Socket MainServer = new Socket("localhost", 9090);
 
@@ -1216,13 +1278,10 @@ public class Home extends javax.swing.JFrame {
 
             OutToServer.close();
             FromServerStream.close();
-            
-            
+
             RefreshAllFriendsList();
-            
-            
-        } catch (IOException | ClassNotFoundException e)
-        {
+
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_btn_friendsRemoveActionPerformed
@@ -1260,6 +1319,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton btn_musicUpload;
     private javax.swing.JButton btn_updatedMusic;
     private javax.swing.JComboBox<String> cbx_homeMood;
+    private javax.swing.JLabel icon_nowPlaying;
+    private javax.swing.JLabel icon_pp;
     private javax.swing.JLabel lbl_exit;
     private javax.swing.JLabel lbl_friendRequests;
     private javax.swing.JLabel lbl_friendsActive;
@@ -1279,6 +1340,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_musicFriends;
     private javax.swing.JLabel lbl_musicIcon;
     private javax.swing.JLabel lbl_musicYourMusic;
+    private javax.swing.JLabel lbl_nowPlaying;
+    private javax.swing.JLabel lbl_songNowPlaying;
     private javax.swing.JLabel lbl_title;
     private javax.swing.JList<String> list_friendsActive;
     private javax.swing.JList<String> list_friendsAll;
@@ -1443,27 +1506,30 @@ public class Home extends javax.swing.JFrame {
 
         Datapacket GetFriendsPosts = new Datapacket();
         //GET MY FRIENDS
-        GetFriendsPosts.SetCommand("GET_FRIENDS_POSTS");
+
+        GetFriendsPosts.SetCommand("GET_POSTS");
         GetFriendsPosts.SetSingleData(username);
 
         OutToServer.writeObject(GetFriendsPosts);
 
         Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
+        System.out.println("test");
 
-        ArrayList<ArrayList<String>> FriendsPosts = ServerReply.GetMultipleArray();
+        ArrayList<String> FriendsPosts = ServerReply.GetArray();
         ta_homePosts.setText("");
+
         for (int i = 0; i < FriendsPosts.size(); i++) {
-            String PostFormat = "";
-            if ("TextPost".equals(FriendsPosts.get(i).get(4))) {
-                if ("Select Mood:".equals(FriendsPosts.get(i).get(3))) {
-                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + "\n";
-                } else {
-                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + " - Feeling " + FriendsPosts.get(i).get(3) + "\n";
-                }
-            } else if ("SongUpload".equals(FriendsPosts.get(i).get(4))) {
-                PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + " uploaded a new song: " + FriendsPosts.get(i).get(2) + "\n";
-            }
-            ta_homePosts.append(PostFormat);
+//            String PostFormat = "";
+//            if ("TextPost".equals(FriendsPosts.get(i).get(4))) {
+//                if ("Select Mood:".equals(FriendsPosts.get(i).get(3))) {
+//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + "\n";
+//                } else {
+//                    PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + ": " + FriendsPosts.get(i).get(2) + " - Feeling " + FriendsPosts.get(i).get(3) + "\n";
+//                }
+//            } else if ("SongUpload".equals(FriendsPosts.get(i).get(4))) {
+//                PostFormat = FriendsPosts.get(i).get(0) + " - " + FriendsPosts.get(i).get(1) + " uploaded a new song: " + FriendsPosts.get(i).get(2) + "\n";
+//            }
+            ta_homePosts.append(FriendsPosts.get(i));
             ta_homePosts.setCaretPosition(ta_homePosts.getDocument().getLength());
         }
         OutToServer.close();
@@ -1476,8 +1542,8 @@ public class Home extends javax.swing.JFrame {
             AudioPlayer.player.stop(audioStream);
             songTimer.stop();
         }
-//        C.SetRequest(false);
-//        D.SetRequest(false);
+        //       C.SetRequest(false);
+        //      D.SetRequest(false);
 
         //message to server to say disconnected user
         Datapacket LoggingOff = new Datapacket();
@@ -1523,5 +1589,75 @@ public class Home extends javax.swing.JFrame {
         login.setVisible(true);
 
         this.dispose();
+    }
+
+    public void playSong() {
+        try {
+
+            // open the sound file as a Java input stream
+            InputStream in = new FileInputStream("media/songs/converted/playSong.wav");
+            // create an audiostream from the inputstream
+            audioStream = new AudioStream(in);
+
+            // play the audio clip with the audioplayer class
+            AudioPlayer.player.start(audioStream);
+
+        } catch (IOException e) {
+        }
+    }
+
+    public void convertFile(String songName) {
+
+        String songPath = "media/songs/" + songName + ".mp3";
+        System.out.println(songPath);
+        javazoom.jl.converter.Converter converter = new javazoom.jl.converter.Converter();
+        try {
+            converter.convert(songPath, "media/songs/converted/playSong.wav");
+        } catch (JavaLayerException ex) {
+        }
+
+    }
+
+    public void downloadSong(String FileName) {
+        Datapacket SelectedSong = new Datapacket();
+        SelectedSong.SetCommand("DOWNLOAD_SONG");
+        SelectedSong.SetSingleData(FileName);
+
+        try {
+            Socket MainServer = new Socket("localhost", 9090);
+
+            ObjectOutputStream OutToServer = new ObjectOutputStream(MainServer.getOutputStream());
+            ObjectInputStream FromServerStream = new ObjectInputStream(MainServer.getInputStream());
+
+            OutToServer.writeObject(SelectedSong);
+
+            Datapacket ServerReply = (Datapacket) FromServerStream.readObject();
+
+            File MusicDirectory = new File("media/songs/" + FileName + ".mp3");
+            File PhotoDirectory = new File("media/photos" + FileName + ".png");
+
+            byte[] Song = (byte[]) ServerReply.GetByteData();
+            FileOutputStream SongOut = new FileOutputStream(MusicDirectory);
+            SongOut.write(Song);
+
+            byte[] CoverPhoto = (byte[]) ServerReply.GetSecondData();
+            FileOutputStream PhotoOut = new FileOutputStream(PhotoDirectory);
+            PhotoOut.write(CoverPhoto);
+
+            OutToServer.close();
+            FromServerStream.close();
+
+            //Pass song name to music player form    
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public ImageIcon ResizeImage(String ImagePath) {
+        ImageIcon MyImage = new ImageIcon(ImagePath);
+        Image img = MyImage.getImage();
+        Image newImg = img.getScaledInstance(icon_pp.getWidth(), icon_pp.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon image = new ImageIcon(newImg);
+        return image;
     }
 }
