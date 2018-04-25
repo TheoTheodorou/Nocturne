@@ -152,25 +152,29 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="25" pref="25" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="lbl_homeSelectMood" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="txt_homePost" alignment="0" max="32767" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lbl_homeNewsFeed" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="btn_homePost" min="-2" pref="70" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="lbl_homeClear" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="txt_homePost" alignment="0" max="32767" attributes="0"/>
+                              <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                                  <Component id="lbl_homePost" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="cbx_homeMood" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                                              <Component id="lbl_homeSelectMood" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="seperator2" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="sp_homePosts" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="seperator1" alignment="0" pref="400" max="32767" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="icon_pp" min="-2" pref="52" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="lbl_homePost" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="cbx_homeMood" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="lbl_homeNewsFeed" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="btn_homePost" min="-2" pref="70" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="lbl_homeClear" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="seperator2" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="sp_homePosts" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="seperator1" alignment="0" pref="400" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -181,11 +185,19 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                          <Component id="lbl_homeSelectMood" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cbx_homeMood" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="20" max="32767" attributes="0"/>
+                                  <Component id="lbl_homeSelectMood" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbx_homeMood" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="icon_pp" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="seperator1" min="-2" pref="10" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="lbl_homePost" min="-2" max="-2" attributes="0"/>
@@ -202,8 +214,8 @@
                               <Component id="lbl_homeNewsFeed" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="sp_homePosts" min="-2" pref="160" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                          <Component id="sp_homePosts" min="-2" pref="150" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -354,6 +366,8 @@
                 <Component class="javax.swing.JSeparator" name="seperator1">
                 </Component>
                 <Component class="javax.swing.JSeparator" name="seperator2">
+                </Component>
+                <Component class="javax.swing.JLabel" name="icon_pp">
                 </Component>
               </SubComponents>
             </Container>
@@ -1217,6 +1231,17 @@
                                       <Component id="sp_musicYourMusic" alignment="0" pref="190" max="32767" attributes="0"/>
                                       <Component id="lbl_musicYourMusic" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="btn_musicPP" alignment="0" pref="0" max="32767" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" attributes="0">
+                                                  <Component id="lbl_nowPlaying" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                              </Group>
+                                              <Component id="lbl_songNowPlaying" max="32767" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="icon_nowPlaying" min="-2" pref="66" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                                   <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -1241,7 +1266,7 @@
                               <Component id="lbl_musicFriends" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="1" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="sp_musicFriends" min="-2" pref="110" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1249,7 +1274,18 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="sp_musicFriendSL" min="-2" pref="112" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="sp_musicYourMusic" min="-2" pref="250" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="sp_musicYourMusic" min="-2" pref="180" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="lbl_nowPlaying" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="lbl_songNowPlaying" min="-2" pref="44" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="icon_nowPlaying" min="-2" pref="66" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -1421,6 +1457,37 @@
                       <Color blue="b1" green="71" red="39" type="rgb"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Friends:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="lbl_nowPlaying">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Segoe UI" size="12" style="0"/>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="b1" green="71" red="39" type="rgb"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Now Playing:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="lbl_songNowPlaying">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Segoe UI" size="12" style="0"/>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="b1" green="71" red="39" type="rgb"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="icon_nowPlaying">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Segoe UI" size="12" style="0"/>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="b1" green="71" red="39" type="rgb"/>
+                    </Property>
                   </Properties>
                 </Component>
               </SubComponents>
